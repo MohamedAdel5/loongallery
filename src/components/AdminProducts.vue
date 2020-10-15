@@ -212,7 +212,9 @@
         <v-btn icon @click="closeAddNewProductWindow">
           <v-icon>mdi-close</v-icon>
         </v-btn>
-        <admin-add-product></admin-add-product>
+        <admin-add-product
+          v-on:product-added="addProduct($event)"
+        ></admin-add-product>
       </div>
     </v-overlay>
     <v-overlay
@@ -286,6 +288,7 @@ export default {
     dataFetched: false,
     productsCount: 0,
     elementsPerRow: 3,
+    elementsPerPage: process.env.VUE_APP_PRODUCTS_ELEMENTS_PER_PAGE,
     page: 1,
     pagesCount: 1,
     productToEdit: null,
@@ -348,12 +351,11 @@ export default {
       }
     },
     getProducts: async function(category, pageNumber) {
-      const elementsPerPage = 2;
       let res = await this.$http.get(
-        `/products?productCategories=${category}&page=${pageNumber}&limit=${elementsPerPage}`
+        `/products?productCategories=${category}&page=${pageNumber}&limit=${this.elementsPerPage}`
       );
       // console.log(res);
-      this.pagesCount = Math.ceil(res.data.totalSize / elementsPerPage);
+      this.pagesCount = Math.ceil(res.data.totalSize / this.elementsPerPage);
       this.productsCount = res.data.size;
 
       this.products = res.data.products;
@@ -381,12 +383,14 @@ export default {
       this.page = pageNumber;
     },
     updateProduct(product) {
-      console.log("here");
       const index = this.products.findIndex(p => p._id === product._id);
       if (index > 0) {
-        console.log("there");
-
         this.products[index] = product;
+      }
+    },
+    addProduct(product) {
+      if (this.products.length < this.elementsPerPage) {
+        this.products.push(product);
       }
     },
     closeDeleteAssertionWindow: function() {

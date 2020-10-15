@@ -6,7 +6,7 @@ import vuetify from "./plugins/vuetify";
 import axios from "axios";
 
 Vue.prototype.$http = axios.create({
-  baseURL: `http://localhost:8000/api/v1`,
+  baseURL: `${process.env.VUE_APP_API_BASE_URL}`,
   headers: {
     Accept: "application/json",
     "Content-Type": "application/json"

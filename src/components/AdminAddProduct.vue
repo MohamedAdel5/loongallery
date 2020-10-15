@@ -131,8 +131,10 @@ export default {
             Authorization: this.$store.getters.adminAuthJwt
           }
         });
-        if (res.status === 200) this.responseResult = "success";
-        else this.responseResult = "fail";
+        if (res.status === 200) {
+          this.responseResult = "success";
+          this.$emit("product-added", res.data.product);
+        } else this.responseResult = "fail";
       } catch (err) {
         this.responseResult = "fail";
       }

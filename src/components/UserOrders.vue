@@ -281,7 +281,7 @@ export default {
     return {
       dataFetched: false,
       page: 1,
-      elementsPerPage: 2,
+      elementsPerPage: process.env.VUE_APP_PRODUCTS_ELEMENTS_PER_PAGE,
       pagesCount: null,
       totalCount: null,
       ordersCount: null,

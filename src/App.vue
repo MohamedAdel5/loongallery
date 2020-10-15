@@ -53,9 +53,12 @@ export default {
       const res = await this.$http.get(`/users/me`, {
         headers: { Authorization: token }
       });
-      this.$store.dispatch("setUser", res.data.user);
-      this.$store.dispatch("setAuthJwt", token);
-      this.$store.dispatch("setLoggedInStatus", true);
+      if (res.status === 200) {
+        this.$store.dispatch("setUser", res.data.user);
+        this.$store.dispatch("setAuthJwt", token);
+        this.$store.dispatch("setLoggedInStatus", true);
+        return true;
+      } else return false;
     }
   },
   watch: {
@@ -73,11 +76,10 @@ export default {
       const authJwt = localStorage.getItem("auth_jwt");
       const tokenValidationResult = this.validateToken(authJwt);
 
-      if (tokenValidationResult === "valid") {
-        this.getUser(authJwt);
+      if (tokenValidationResult === "valid" && this.getUser(authJwt)) {
         this.dataFetched = true;
         return;
-      } else if (tokenValidationResult === "expired") {
+      } else {
         localStorage.removeItem("auth_jwt");
       }
     }

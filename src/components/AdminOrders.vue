@@ -1,5 +1,6 @@
 <template>
   <v-card v-if="dataFetched" class="main mb-16">
+    <h2 class="text-center py-10 secondary--text">Orders</h2>
     <v-container>
       <v-row>
         <v-col cols="12">
@@ -388,6 +389,7 @@ export default {
     return {
       dataFetched: false,
       page: 1,
+      elementsPerPage: process.env.VUE_APP_ORDERS_ELEMENTS_PER_PAGE,
       pagesCount: null,
       totalCount: null,
       ordersCount: null,
@@ -458,15 +460,14 @@ export default {
       else return false;
     },
     getOrders: async function(pageNumber) {
-      const elementsPerPage = 2;
       let res = await this.$http.get(
-        `/orders?sort=-date&page=${pageNumber}&limit=${elementsPerPage}`,
+        `/orders?sort=-date&page=${pageNumber}&limit=${this.elementsPerPage}`,
         {
           headers: { Authorization: this.$store.getters.adminAuthJwt }
         }
       );
       // console.log(res);
-      this.pagesCount = Math.ceil(res.data.totalSize / elementsPerPage);
+      this.pagesCount = Math.ceil(res.data.totalSize / this.elementsPerPage);
       this.totalCount = res.data.totalSize;
       this.ordersCount = res.data.size;
       this.unseenCount = res.data.totalUnseen;
