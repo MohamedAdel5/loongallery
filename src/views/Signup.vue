@@ -93,7 +93,15 @@
                 @click:append="showPasswordCheck = !showPasswordCheck"
               ></v-text-field>
 
-              <v-btn class="my-4" color="secondary" @click="signup"
+              <v-checkbox
+                v-model="agreement"
+                :label="`I agree to receive emails from loongallery.`"
+              ></v-checkbox>
+              <v-btn
+                class="my-4"
+                color="secondary"
+                @click="signup"
+                :disabled="!agreement"
                 >Signup</v-btn
               >
               <v-alert type="error" v-if="signupFail"
@@ -150,7 +158,8 @@ export default {
       v => !!v || "Password is required",
       v => v.length > 8 || "Password length must be 8-50 characters"
     ],
-    passwordCheckRules: [v => !!v || "Password check is required"]
+    passwordCheckRules: [v => !!v || "Password check is required"],
+    agreement: false
   }),
 
   computed: {
@@ -209,9 +218,9 @@ export default {
 
 <style scoped>
 .main {
-  background-image: url("~@/assets/sketch-texture.jpg") !important;
+  background-image: url("~@/assets/sketch-texture.png") !important;
   background-repeat: repeat;
-  background-size: 400px 400px;
+  background-size: 600px 600px;
   /* background-color: black !important; */
   border-radius: 10px !important;
 }

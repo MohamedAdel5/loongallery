@@ -150,9 +150,12 @@
               "
               label="Select One Of Our Locations"
               v-model="receiveLocation"
-              :items="ourLocations"
+              :items="ourLocationsShort"
               :rules="receiveLocationRules"
             />
+            <p v-if="receiveLocation">
+              {{ ourLocationsLong[ourLocationsShort.indexOf(receiveLocation)] }}
+            </p>
           </v-container>
           <v-container>
             <v-row>
@@ -211,7 +214,8 @@ export default {
     ],
 
     metroStations: [],
-    ourLocations: [],
+    ourLocationsShort: [],
+    ourLocationsLong: [],
 
     valid: false,
     userPhoneNumbers: undefined,
@@ -360,7 +364,7 @@ export default {
           address = `التسليم لمحطة المترو ${this.metroStation}. `;
           break;
         case "Receive It From Our Location (No Shipping Fees)":
-          address = `التسليم من مقر الشركة ${this.receiveLocation}. `;
+          address = ` :التسليم من مقر الشركة ${this.receiveLocation}. `;
           break;
       }
       return address;
@@ -377,8 +381,14 @@ export default {
       else throw new Error("fail");
 
       res = await this.$http.get(`/global-variables/ourLocations`);
-      if (res.status === 200) this.ourLocations = res.data.ourLocations;
-      else throw new Error("fail");
+      if (res.status === 200) {
+        this.ourLocationsShort = res.data.ourLocations.map(
+          location => location.short
+        );
+        this.ourLocationsLong = res.data.ourLocations.map(
+          location => location.long
+        );
+      } else throw new Error("fail");
 
       if (Object.keys(this.$store.getters.shippingFees).length === 0) {
         res = await this.$http.get(`/global-variables/shippingFees`);
@@ -405,9 +415,9 @@ export default {
 
 <style scoped>
 .main {
-  background-image: url("~@/assets/sketch-texture.jpg") !important;
+  background-image: url("~@/assets/sketch-texture.png") !important;
   background-repeat: repeat;
-  background-size: 400px 400px;
+  background-size: 600px 600px;
   /* background-color: black !important; */
   border-radius: 10px !important;
 }

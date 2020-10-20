@@ -20,7 +20,7 @@
       >
         <v-list-item
           @click="currentComponent = navbarTabs[0].component"
-          :to="'#'"
+          :to="$route.name"
         >
           <v-list-item-icon>
             <v-icon class="secondary--text">mdi-home</v-icon>

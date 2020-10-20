@@ -7,6 +7,37 @@
       <v-form v-model="valid" ref="form">
         <v-row>
           <v-col cols="10">
+            <v-row
+              style="border: solid 1px grey; border-radius: 5px; color: rgba(50, 46, 46, 0.87)"
+            >
+              <v-col cols="12">
+                <v-container>
+                  <p>
+                    - Please follow the following rules before uploading your
+                    image:<br />
+                  </p>
+                  <ol>
+                    <li>
+                      Upload a good quality image that shows all important
+                      features.
+                    </li>
+                    <li>The image format has to be jpg/jpeg or png</li>
+                    <li>
+                      In case of choosing wood carving, upload an image that
+                      contains the text you would like to have on the
+                      product(Name/Date/Quote).
+                    </li>
+                  </ol>
+                </v-container>
+                <v-divider></v-divider>
+                <v-container>
+                  <p>
+                    - Please read the section underneath this page to find
+                    details about our products materials and our delivery times.
+                  </p>
+                </v-container>
+              </v-col>
+            </v-row>
             <v-row>
               <p class="font-weight-light secondary--text">
                 Upload An Image And Make A Special Order
@@ -136,6 +167,97 @@
           </v-col>
         </v-row>
       </v-form>
+      <v-divider></v-divider>
+      <v-row style="border: solid 1px grey; border-radius: 5px" class="mt-10">
+        <v-container>
+          <v-row>
+            <v-col cols="12">
+              <h3>Our products and their delivery times:</h3>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12">
+              <h4>Digital Portrait</h4>
+              <ul>
+                <li>
+                  Material <br />
+                  <ul>
+                    <li>Printed on a 12mm MDF wood.</li>
+                    <li>
+                      Has two hangers on the back to be hanged either
+                      horizontally or vertically.
+                    </li>
+                    <li>
+                      Has an extra protection screen to protect it from water
+                      and dust.
+                    </li>
+                    <li>Has a leather-like texture and can cleaned easily.</li>
+                  </ul>
+                </li>
+                <li>
+                  Delivery time <br />
+                  <ul>
+                    <li>Delivery to a home: 3-5 days</li>
+                    <li>Delivery to a metro station: 2-3 days</li>
+                    <li>Receive from our branch location: 2-3 days</li>
+                  </ul>
+                </li>
+              </ul>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12">
+              <h4>Wood carving</h4>
+              <ul>
+                <li>
+                  Material <br />
+                  <ul>
+                    <li>Natural wood.</li>
+                    <li>
+                      It has text carved in it. You can write:
+                      <ul>
+                        <li>A name</li>
+                        <li>A date</li>
+                        <li>A quote</li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  Delivery time <br />
+                  <ul>
+                    <li>Delivery to a home: within 7 days</li>
+                    <li>Delivery to a metro station: within 7 days</li>
+                    <li>Receive from our branch location: within 7 days</li>
+                  </ul>
+                </li>
+              </ul>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12">
+              <h4>Others (Pencil, Pen, Coal, Gouache, watercolor)</h4>
+              <ul>
+                <li>
+                  Material <br />
+                  <ul>
+                    <li>Hand drawing on heavy paper (canson).</li>
+                    <li>Kept in a black wood frame.</li>
+                  </ul>
+                </li>
+                <li>
+                  Delivery time <br />
+                  <ul>
+                    <li>Delivery to a home: within 7 days</li>
+                    <li>Delivery to a metro station: within 7 days</li>
+                    <li>Receive from our branch location: within 7 days</li>
+                  </ul>
+                </li>
+              </ul>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-row>
     </v-container>
   </v-card>
 </template>
@@ -247,9 +369,9 @@ h2 {
   max-height: 50px;
 }
 .main {
-  background-image: url("~@/assets/sketch-texture.jpg") !important;
+  background-image: url("~@/assets/sketch-texture.png") !important;
   background-repeat: repeat;
-  background-size: 400px 400px;
+  background-size: 600px 600px;
   background-color: black !important;
   border-radius: 10px !important;
 }

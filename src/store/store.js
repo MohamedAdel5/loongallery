@@ -78,7 +78,20 @@ const store = new Vuex.Store({
       }
     },
     ADD_TO_CART: (state, product) => {
-      state.cart.push(product);
+      let productIndex = -1;
+      if (product.productID) {
+        productIndex = state.cart.findIndex(p => {
+          return p.productID === product.productID && p.size === product.size;
+        });
+      }
+      //IF product is custom product or is not a duplicate, insert it directly.
+      if (productIndex < 0) {
+        state.cart.push(product);
+      } //If the product is a duplicate, just add its quantity and price to its duplicates' quantity and price in the array
+      else {
+        state.cart[productIndex].quantity += product.quantity;
+        state.cart[productIndex].price += product.price;
+      }
     },
     REMOVE_FROM_CART: (state, index) => {
       state.cart.splice(index, 1);

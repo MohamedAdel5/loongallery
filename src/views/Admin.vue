@@ -20,7 +20,7 @@
       >
         <v-list-item
           @click="currentComponent = navbarTabs[0].component"
-          :to="'#'"
+          :to="$route.name"
         >
           <v-list-item-icon>
             <v-icon class="secondary--text">mdi-home</v-icon>
@@ -70,6 +70,9 @@ import Banner from "../components/Banner";
 import AdminProducts from "../components/AdminProducts";
 import AdminOrders from "../components/AdminOrders";
 import AdminEditPrices from "../components/AdminEditPrices";
+import AdminDatabaseBackup from "../components/AdminDatabaseBackup";
+import AdminEditAds from "../components/AdminEditAds";
+import AdminSendEmails from "../components/AdminSendEmails";
 
 export default {
   name: "Admin",
@@ -77,7 +80,10 @@ export default {
     AdminProducts,
     AdminOrders,
     Banner,
-    AdminEditPrices
+    AdminEditPrices,
+    AdminDatabaseBackup,
+    AdminEditAds,
+    AdminSendEmails
   },
   data() {
     return {
@@ -102,6 +108,21 @@ export default {
           icon: "mdi-currency-usd",
           title: "Edit Prices",
           component: "admin-edit-prices"
+        },
+        {
+          icon: "mdi-television-guide",
+          title: "Edit Ads",
+          component: "admin-edit-ads"
+        },
+        {
+          icon: "mdi-email",
+          title: "Send Emails",
+          component: "admin-send-emails"
+        },
+        {
+          icon: "mdi-content-save",
+          title: "Database backup",
+          component: "admin-database-backup"
         }
       ],
       currentComponent: "admin-orders"

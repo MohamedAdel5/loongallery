@@ -2,6 +2,14 @@
   <v-card tile flat class="main mb-16" v-if="dataFetched">
     <h2 class="text-center py-10 secondary--text">Our Products</h2>
     <v-container class="d-flex flex-column align-content-space-around">
+      <v-row style="color: rgba(50, 46, 46, 0.87)">
+        <v-container>
+          <p class="text-center black--text">
+            Please read the section underneath this page to find details about
+            our products materials and our delivery times.
+          </p>
+        </v-container>
+      </v-row>
       <v-tabs
         v-model="tabIndex"
         show-arrows
@@ -141,6 +149,71 @@
           ></v-pagination
         ></v-col>
       </v-row>
+      <v-divider></v-divider>
+      <v-row
+        style="border: solid 1px grey; border-radius: 5px"
+        class="mx-2 mt-6"
+      >
+        <v-container>
+          <v-row>
+            <v-col cols="12">
+              <h3>Our products and their delivery times:</h3>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12">
+              <h4>Decoration tableaus</h4>
+              <ul>
+                <li>
+                  Material <br />
+                  <ul>
+                    <li>Printed on a 12mm MDF wood.</li>
+                    <li>
+                      Has two hangers on the back to be hanged either
+                      horizontally or vertically.
+                    </li>
+                    <li>
+                      Has an extra protection screen to protect it from water
+                      and dust.
+                    </li>
+                    <li>Has a leather-like texture and can cleaned easily.</li>
+                  </ul>
+                </li>
+                <li>
+                  Delivery time <br />
+                  <ul>
+                    <li>Delivery to a home: 3-5 days</li>
+                    <li>Delivery to a metro station: 2-3 days</li>
+                    <li>Receive from our branch location: 2-3 days</li>
+                  </ul>
+                </li>
+              </ul>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12">
+              <h4>Mersal</h4>
+              <ul>
+                <li>
+                  Material <br />
+                  <ul>
+                    <li>An envelope made of heavy paper(canson).</li>
+                    <li>Watercolor drawing.</li>
+                  </ul>
+                </li>
+                <li>
+                  Delivery time <br />
+                  <ul>
+                    <li>Delivery to a home: within 7 days</li>
+                    <li>Delivery to a metro station: within 7 days</li>
+                    <li>Receive from our branch location: within 7 days</li>
+                  </ul>
+                </li>
+              </ul>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-row>
     </v-container>
   </v-card>
 </template>
@@ -165,8 +238,7 @@ export default {
       tabIndex: 0,
       tabs: [
         { title: "Decoration Tableau", category: "Decoration tableau" },
-        { title: "Mersal", category: "Mersal" },
-        { title: "Wood Carving", category: "Wood carving" }
+        { title: "Mersal", category: "Mersal" }
       ],
       // sortByOptions: [
       //   {
@@ -241,9 +313,9 @@ h2 {
   font-weight: bolder;
 }
 .main {
-  background-image: url("~@/assets/sketch-texture.jpg") !important;
+  background-image: url("~@/assets/sketch-texture.png") !important;
   background-repeat: repeat;
-  background-size: 400px 400px;
+  background-size: 600px 600px;
   background-color: black !important;
   border-radius: 10px !important;
 }

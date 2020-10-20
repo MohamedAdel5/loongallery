@@ -18,7 +18,7 @@
               <v-col cols="6">
                 <v-label
                   ><span class="black--text caption"
-                    >Product Image</span
+                    >Product Image (300x300)pixels</span
                   ></v-label
                 >
               </v-col>

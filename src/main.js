@@ -5,8 +5,13 @@ import router from "./router/router";
 import vuetify from "./plugins/vuetify";
 import axios from "axios";
 
+const baseURL =
+  process.env.VUE_APP_NODE_ENV === "production"
+    ? process.env.VUE_APP_API_BASE_URL
+    : process.env.VUE_APP_API_BASE_URL_DEVELOPMENT;
+
 Vue.prototype.$http = axios.create({
-  baseURL: `${process.env.VUE_APP_API_BASE_URL}`,
+  baseURL,
   headers: {
     Accept: "application/json",
     "Content-Type": "application/json"

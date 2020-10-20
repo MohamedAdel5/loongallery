@@ -93,7 +93,7 @@
         </v-form>
       </v-container>
     </v-card>
-    <v-tooltip left style="z-index: 11">
+    <v-tooltip v-model="showCartTooltip" left style="z-index: 11">
       <template v-slot:activator="{ on, attrs }">
         <v-btn
           dark
@@ -110,7 +110,8 @@
           <v-icon>mdi-cart</v-icon>
         </v-btn>
       </template>
-      <span>View Your Shopping Cart</span>
+      <span v-if="productIsAdded">A Product Is Added To Your Cart.</span>
+      <span v-else>View Your Shopping Cart</span>
     </v-tooltip>
   </v-container>
 </template>
@@ -122,6 +123,8 @@ export default {
     return {
       quantity: 1,
       imageSize: 300,
+      showCartTooltip: false,
+      productIsAdded: false,
       product: null,
       generalProductSizesPrices: null,
       size: "",
@@ -148,6 +151,7 @@ export default {
           price: this.price
         };
         this.$store.dispatch("addToCart", product);
+        this.showProductAddedTooltip();
       }
     },
     hideAddToCart: function() {
@@ -155,6 +159,14 @@ export default {
     },
     goBack: function() {
       this.$router.go(-1);
+    },
+    showProductAddedTooltip: function() {
+      this.productIsAdded = true;
+      this.showCartTooltip = true;
+      setTimeout(() => {
+        this.showCartTooltip = false;
+        this.productIsAdded = false;
+      }, 3000);
     }
   },
   computed: {
@@ -205,9 +217,9 @@ export default {
   border: solid 1px black;
 }
 .main {
-  background-image: url("~@/assets/sketch-texture.jpg") !important;
+  background-image: url("~@/assets/sketch-texture.png") !important;
   background-repeat: repeat;
-  background-size: 400px 400px;
+  background-size: 600px 600px;
   background-color: black !important;
   border-radius: 10px !important;
 }

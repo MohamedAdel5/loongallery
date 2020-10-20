@@ -1,10 +1,18 @@
 <template>
   <v-container>
     <v-card class="main mb-16">
-      <v-card-title class="cart-card-title d-block text-center secondary--text"
-        >Your Shopping Cart</v-card-title
-      >
       <v-container>
+        <v-row>
+          <v-col cols="12" class="d-flex justify-start pb-0">
+            <v-btn @click="goBack" max-width="200px" color="secondary"
+              >Go Back</v-btn
+            >
+          </v-col>
+        </v-row>
+        <v-card-title
+          class="cart-card-title d-block text-center secondary--text"
+          >Your Shopping Cart</v-card-title
+        >
         <v-row>
           <v-col cols="12" class="secondary--text pb-0">
             <h3 class="font-weight-regular">Products</h3>
@@ -218,9 +226,9 @@ export default {
 </script>
 <style scoped>
 .main {
-  background-image: url("~@/assets/sketch-texture.jpg") !important;
+  background-image: url("~@/assets/sketch-texture.png") !important;
   background-repeat: repeat;
-  background-size: 400px 400px;
+  background-size: 600px 600px;
   background-color: black !important;
   border-radius: 10px !important;
 }

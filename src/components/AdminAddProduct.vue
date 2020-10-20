@@ -7,7 +7,7 @@
           <v-col cols="10">
             <v-row>
               <p class="font-weight-light secondary--text">
-                Upload Product Image
+                Upload Product Image (300x300)pixels
               </p>
             </v-row>
             <v-row>

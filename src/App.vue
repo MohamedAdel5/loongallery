@@ -3,6 +3,19 @@
     <appbar />
     <v-main class="main-app">
       <router-view />
+      <v-overlay z-index="12" opacity="0.8" v-if="showAd" :value="true">
+        <div class="my-10" v-click-outside="closeAd">
+          <v-btn icon @click="closeAd">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+          <v-img
+            :src="adImage"
+            :height="adImageSize"
+            :width="adImageSize"
+            class="image-class"
+          ></v-img>
+        </div>
+      </v-overlay>
     </v-main>
 
     <footer-component />
@@ -21,9 +34,26 @@ export default {
     FooterComponent
   },
   data: () => ({
+    showAd: false,
+    adImage: null,
+    adImageSize: 500,
     dataFetched: false
   }),
   methods: {
+    getAd: async function() {
+      try {
+        const res = await this.$http.get("/ads");
+        if (res.status !== 200 || !res.data.ad) return;
+        this.adImage = res.data.ad.image;
+        if (!this.adImage) throw Error("fail");
+        this.showAd = true;
+      } catch (err) {
+        return;
+      }
+    },
+    closeAd: function() {
+      this.showAd = false;
+    },
     parseJwt: function(token) {
       const base64Url = token.split(".")[1];
       const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
@@ -86,6 +116,14 @@ export default {
     this.$store.dispatch("setAuthJwt", null);
     this.$store.dispatch("setLoggedInStatus", false);
     this.$store.dispatch("setUser", {});
+
+    if (
+      this.$route.name !== "admin" &&
+      this.$route.name !== "admin-login" &&
+      !this.$store.getters.loggedIn
+    ) {
+      await this.getAd();
+    }
 
     this.dataFetched = true;
   }

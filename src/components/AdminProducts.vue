@@ -298,8 +298,7 @@ export default {
     tabIndex: 0,
     tabs: [
       { title: "Decoration Tableau", category: "Decoration tableau" },
-      { title: "Mersal", category: "Mersal" },
-      { title: "Wood Carving", category: "Wood carving" }
+      { title: "Mersal", category: "Mersal" }
     ],
     showAddNewProductWindow: false,
     showEditProductWindow: false,
@@ -419,9 +418,9 @@ h2 {
   font-weight: bolder;
 }
 .main {
-  background-image: url("~@/assets/sketch-texture.jpg") !important;
+  background-image: url("~@/assets/sketch-texture.png") !important;
   background-repeat: repeat;
-  background-size: 400px 400px;
+  background-size: 600px 600px;
   background-color: black !important;
   border-radius: 10px !important;
 }

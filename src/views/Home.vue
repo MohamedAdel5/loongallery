@@ -23,7 +23,7 @@
         <component v-bind:is="tabs[tabIndex].component"></component>
       </v-card>
     </v-container>
-    <v-tooltip left style="z-index: 11">
+    <v-tooltip v-model="showCartTooltip" left style="z-index: 11">
       <template v-slot:activator="{ on, attrs }">
         <v-btn
           dark
@@ -40,7 +40,8 @@
           <v-icon>mdi-cart</v-icon>
         </v-btn>
       </template>
-      <span>View Your Shopping Cart</span>
+      <span v-if="productIsAdded">A Product Is Added To Your Cart.</span>
+      <span v-else>View Your Shopping Cart</span>
     </v-tooltip>
   </div>
 </template>
@@ -60,6 +61,8 @@ export default {
   data() {
     return {
       tabIndex: 0,
+      showCartTooltip: false,
+      productIsAdded: false,
       tabs: [
         { title: "Our Products", component: "our-products" },
         { title: "Customized Portraits", component: "customized-portraits" }
@@ -70,6 +73,14 @@ export default {
     redirect: function(component) {
       if (component !== this.$route.params.component)
         this.$router.push(`/home/${component}`);
+    },
+    showProductAddedTooltip: function() {
+      this.productIsAdded = true;
+      this.showCartTooltip = true;
+      setTimeout(() => {
+        this.showCartTooltip = false;
+        this.productIsAdded = false;
+      }, 3000);
     }
   },
   watch: {
@@ -79,6 +90,11 @@ export default {
       this.tabIndex = this.tabs.findIndex(tab => {
         return tab.component === component;
       });
+    },
+    "$store.state.cart.length": function(newCount, oldCount) {
+      if (newCount > oldCount) {
+        this.showProductAddedTooltip();
+      }
     }
   },
   // // This Can be used instead of watching $route
