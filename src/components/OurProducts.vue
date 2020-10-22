@@ -1,12 +1,14 @@
 <template>
   <v-card tile flat class="main mb-16" v-if="dataFetched">
-    <h2 class="text-center py-10 secondary--text">Our Products</h2>
-    <v-container class="d-flex flex-column align-content-space-around">
+    <h2 class="text-center pt-10 secondary--text">Our Products</h2>
+    <v-container class="d-flex flex-column align-content-space-around pt-0">
       <v-row style="color: rgba(50, 46, 46, 0.87)">
-        <v-container>
-          <p class="text-center black--text">
-            Please read the section underneath this page to find details about
-            our products materials and our delivery times.
+        <v-container class="pt-0">
+          <p class="text-center caption">
+            <a href="#productsDetails" class="brown--text">
+              Please read the section underneath this page to find details about
+              our products materials and our delivery times.
+            </a>
           </p>
         </v-container>
       </v-row>
@@ -154,7 +156,7 @@
         style="border: solid 1px grey; border-radius: 5px"
         class="mx-2 mt-6"
       >
-        <v-container>
+        <v-container id="productsDetails">
           <v-row>
             <v-col cols="12">
               <h3>Our products and their delivery times:</h3>
