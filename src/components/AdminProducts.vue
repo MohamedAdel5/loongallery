@@ -388,8 +388,9 @@ export default {
       }
     },
     addProduct(product) {
-      if (this.products.length < this.elementsPerPage) {
+      if (this.products.length < Number(this.elementsPerPage)) {
         this.products.push(product);
+        this.productsCount++;
       }
     },
     closeDeleteAssertionWindow: function() {
