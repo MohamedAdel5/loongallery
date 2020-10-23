@@ -142,20 +142,24 @@
                 ></v-text-field>
               </template>
             </template>
-
-            <v-select
+            <template
               v-if="
                 shippingMethod ===
                   'Receive It From Our Location (No Shipping Fees)'
               "
-              label="Select One Of Our Locations"
-              v-model="receiveLocation"
-              :items="ourLocationsShort"
-              :rules="receiveLocationRules"
-            />
-            <p v-if="receiveLocation">
-              {{ ourLocationsLong[ourLocationsShort.indexOf(receiveLocation)] }}
-            </p>
+            >
+              <v-select
+                label="Select One Of Our Locations"
+                v-model="receiveLocation"
+                :items="ourLocationsShort"
+                :rules="receiveLocationRules"
+              />
+              <p v-if="receiveLocation">
+                {{
+                  ourLocationsLong[ourLocationsShort.indexOf(receiveLocation)]
+                }}
+              </p>
+            </template>
           </v-container>
           <v-container>
             <v-row>

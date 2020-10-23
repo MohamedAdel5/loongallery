@@ -388,9 +388,14 @@ export default {
       }
     },
     addProduct(product) {
-      if (this.products.length < Number(this.elementsPerPage)) {
+      console.log(product);
+      if (
+        this.products.length < Number(this.elementsPerPage) &&
+        this.currentCategory === product.productCategories[0]
+      ) {
         this.products.push(product);
         this.productsCount++;
+        if (this.pagesCount === 0) this.pagesCount = 1;
       }
     },
     closeDeleteAssertionWindow: function() {

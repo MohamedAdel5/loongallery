@@ -102,7 +102,11 @@ export default {
   },
   mounted: async function() {
     document.title = "Loongallery";
-    if (this.$route.name !== "admin" && this.$route.name !== "admin-login") {
+    if (
+      this.$route.name !== "admin" &&
+      this.$route.name !== "admin-login" &&
+      this.$route.name !== "404"
+    ) {
       const authJwt = localStorage.getItem("auth_jwt");
       const tokenValidationResult = this.validateToken(authJwt);
 
