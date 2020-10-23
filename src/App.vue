@@ -42,7 +42,7 @@ export default {
   methods: {
     getAd: async function() {
       try {
-        const res = await this.$http.get("/ads");
+        const res = await this.$http.get("/offers");
         if (res.status !== 200 || !res.data.ad) return;
         this.adImage = res.data.ad.image;
         if (!this.adImage) throw Error("fail");

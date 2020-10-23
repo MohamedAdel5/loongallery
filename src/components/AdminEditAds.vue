@@ -102,7 +102,7 @@ export default {
       formData.append("adImage", this.adImage);
       formData.append("adText", [this.adText]);
       try {
-        const res = await this.$http.post(`/ads`, formData, {
+        const res = await this.$http.post(`/offers`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
             Authorization: this.$store.getters.adminAuthJwt
@@ -120,7 +120,7 @@ export default {
       this.deleteMessage = "Please wait...";
 
       try {
-        const res = await this.$http.delete(`/ads`, {
+        const res = await this.$http.delete(`/offers`, {
           headers: {
             Authorization: this.$store.getters.adminAuthJwt
           }
