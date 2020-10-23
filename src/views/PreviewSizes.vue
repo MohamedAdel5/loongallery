@@ -86,7 +86,7 @@ h2 {
   font-weight: normal;
 }
 .main {
-  background-image: url("~@/assets/sketch-texture.png") !important;
+  background-image: url("~@/assets/sketch-texture.jpg") !important;
   background-repeat: repeat;
   background-size: 600px 600px;
   background-color: black !important;
