@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container v-if="dataFetched">
     <v-card class="main mb-16">
       <v-container>
         <v-row>
@@ -44,8 +44,8 @@
                         </tr>
                         <template v-if="!isCustomProduct(product)">
                           <tr>
-                            <td>Product ID</td>
-                            <td>{{ product.productID }}</td>
+                            <td>SKU code</td>
+                            <td>{{ product.skuCode }}</td>
                           </tr>
                           <tr>
                             <td>Product Image</td>
@@ -73,18 +73,9 @@
                             <td>{{ product.numberOfFaces }}</td>
                           </tr>
                           <tr>
-                            <td>Product Categories</td>
+                            <td>Product Category</td>
 
-                            <td>
-                              <tr
-                                v-for="category in product.productCategories"
-                                :key="category"
-                              >
-                                {{
-                                  category
-                                }}
-                              </tr>
-                            </td>
+                            <td>{{ getProductCategory(product) }}</td>
                           </tr>
                           <tr>
                             <td>Price</td>
@@ -111,14 +102,7 @@
                             <td>Product Categories</td>
 
                             <td>
-                              <tr
-                                v-for="category in product.productCategories"
-                                :key="category"
-                              >
-                                {{
-                                  category
-                                }}
-                              </tr>
+                              {{ getProductCategory(product) }}
                             </td>
                           </tr>
                           <tr>
@@ -183,8 +167,14 @@
 
 <script>
 import OrderInfo from "../components/OrderInfo";
+import {
+  setCustomGeneralProductsMixin,
+  setNonCustomGeneralProductsMixin
+} from "@/mixins/apiMixins";
 
 export default {
+  name: "shopping-cart",
+  mixins: [setCustomGeneralProductsMixin, setNonCustomGeneralProductsMixin],
   components: {
     OrderInfo
   },
@@ -205,7 +195,8 @@ export default {
   },
   data() {
     return {
-      imageSize: 100,
+      dataFetched: false,
+      imageSize: process.env.VUE_APP_CART_IMAGE_SIZE,
       orderedSuccessfully: "none"
     };
   },
@@ -213,25 +204,45 @@ export default {
     removeFromCart: function(index) {
       this.$store.dispatch("removeFromCart", index);
     },
-    isCustomProduct: product => {
-      if (product.productCategories.includes("Custom")) return true;
-      else return false;
+    isCustomProduct: function(product) {
+      let customGeneralProducts = this.$store.getters.customGeneralProducts;
+      let keys = Object.keys(customGeneralProducts);
+
+      for (let key of keys) {
+        if (customGeneralProducts[key].id === product.generalProduct)
+          return true;
+      }
+      return false;
+    },
+    getProductCategory(product) {
+      let customGeneralProducts = this.$store.getters.customGeneralProducts;
+      let nonCustomGeneralProducts = this.$store.getters
+        .nonCustomGeneralProducts;
+
+      let keys = Object.keys(customGeneralProducts);
+      for (let key of keys) {
+        if (customGeneralProducts[key].id === product.generalProduct)
+          return key;
+      }
+      keys = Object.keys(nonCustomGeneralProducts);
+      for (let key of keys) {
+        if (nonCustomGeneralProducts[key].id === product.generalProduct)
+          return key;
+      }
+      return "";
     },
     goBack: function() {
       this.$router.go(-1);
     }
   },
-  mounted() {}
+  mounted: async function() {
+    await this.setCustomGeneralProducts();
+    await this.setNonCustomGeneralProducts();
+    this.dataFetched = true;
+  }
 };
 </script>
 <style scoped>
-.main {
-  background-image: url("~@/assets/sketch-texture.jpg") !important;
-  background-repeat: repeat;
-  background-size: 600px 600px;
-  background-color: black !important;
-  border-radius: 10px !important;
-}
 .cart-card-title,
 h2 {
   font-family: "Advent Pro";
@@ -245,9 +256,5 @@ td {
 }
 .table-class {
   background-color: transparent !important;
-}
-.image-class {
-  border: 1px solid grey;
-  border-radius: 5px;
 }
 </style>

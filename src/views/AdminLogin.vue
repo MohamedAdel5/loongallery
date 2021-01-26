@@ -23,7 +23,9 @@
                 @click:append="showPassword = !showPassword"
               ></v-text-field>
 
-              <v-btn class="my-4" color="secondary" @click="login">Login</v-btn>
+              <v-btn class="my-4" color="secondary" @click="loginSubmit"
+                >Login</v-btn
+              >
               <v-alert type="error" v-if="loginFail"
                 >Wrong email or password</v-alert
               >
@@ -36,8 +38,11 @@
 </template>
 
 <script>
+import { adminLoginMixin } from "@/mixins/apiMixins";
+
 export default {
   name: "admin-login",
+  mixins: [adminLoginMixin],
 
   data: () => ({
     valid: false,
@@ -56,29 +61,10 @@ export default {
   }),
 
   methods: {
-    login: async function() {
+    loginSubmit: async function() {
       this.$refs.form.validate();
       if (this.valid) {
-        try {
-          const res = await this.$http.post("/authentication/admin-login", {
-            email: this.email,
-            password: this.password
-          });
-
-          if (res.status === 200) {
-            sessionStorage.setItem("admin_auth_jwt", res.data.token);
-
-            this.$store.dispatch("setAdmin", res.data.user);
-            this.$store.dispatch("setAdminAuthJwt", res.data.token);
-            this.$store.dispatch("setAdminLoggedInStatus", true);
-            this.$router.push(`/6324789123/admin`);
-          } else {
-            this.loginFail = true;
-          }
-        } catch (err) {
-          // console.log(err);
-          this.loginFail = true;
-        }
+        this.loginFail = !(await this.adminLogin(this.email, this.password));
       }
     }
   }
@@ -86,13 +72,6 @@ export default {
 </script>
 
 <style scoped>
-.main {
-  background-image: url("~@/assets/sketch-texture.jpg") !important;
-  background-repeat: repeat;
-  background-size: 600px 600px;
-  /* background-color: black !important; */
-  border-radius: 10px !important;
-}
 .login {
   font-family: "Advent Pro";
   font-size: 30px;

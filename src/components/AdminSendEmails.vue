@@ -51,8 +51,11 @@
 </template>
 
 <script>
+import emailBroadcastMixin from "@/mixins/apiMixins";
+
 export default {
   name: "admin-send-emails",
+  mixins: [emailBroadcastMixin],
   data: () => ({
     dataFetched: false,
     valid: false,
@@ -69,23 +72,15 @@ export default {
         return;
       }
       this.message = "Please wait...";
+      const body = {
+        emailContent: this.emailContent,
+        emailSubject: this.emailContent
+      };
 
-      try {
-        const body = {
-          emailContent: this.emailContent,
-          emailSubject: this.emailContent
-        };
-        const res = await this.$http.post(`/emails/broadcast`, body, {
-          headers: {
-            Authorization: this.$store.getters.adminAuthJwt
-          }
-        });
-        if (res.status === 200) {
-          this.responseResult = "success";
-        } else this.responseResult = "fail";
-      } catch (err) {
-        this.responseResult = "fail";
-      }
+      this.responseResult = (await this.emailBroadcast(body))
+        ? "success"
+        : "fail";
+
       this.message = "";
     }
   },
@@ -103,12 +98,5 @@ h2 {
 }
 .sizeRow {
   max-height: 50px;
-}
-.main {
-  background-image: url("~@/assets/sketch-texture.jpg") !important;
-  background-repeat: repeat;
-  background-size: 600px 600px;
-  background-color: black !important;
-  border-radius: 10px !important;
 }
 </style>

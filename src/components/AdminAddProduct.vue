@@ -11,7 +11,7 @@
               </p>
             </v-row>
             <v-row>
-              <!-- Visit this page for upload info https://bezkoder.com/vuetify-file-upload/ -->
+              <!-- Visit this page for ore info about how to upload files in vue: https://bezkoder.com/vuetify-file-upload/ -->
               <v-file-input
                 dense
                 accept="image/*"
@@ -65,7 +65,10 @@
 
             <v-row class="mt-10">
               <v-col cols="12" class="pa-0" sm="6">
-                <v-btn @click="addProduct" max-width="200px" color="success"
+                <v-btn
+                  @click="addProductSubmit"
+                  max-width="200px"
+                  color="success"
                   >Add</v-btn
                 >
               </v-col>
@@ -90,9 +93,11 @@
 </template>
 
 <script>
+import { addProductMixin } from "@/mixins/apiMixins";
+
 export default {
   name: "admin-add-product",
-
+  mixins: [addProductMixin],
   computed: {
     categories() {
       return this.$store.getters.categories;
@@ -115,30 +120,25 @@ export default {
     selectFile(file) {
       this.uploadedImage = file;
     },
-    addProduct: async function() {
+    addProductSubmit: async function() {
       this.$refs.form.validate();
       if (!this.valid) {
         return;
       }
       let formData = new FormData();
       formData.append("image", this.uploadedImage);
-      formData.append("productCategories", [this.productCategory]);
+      // formData.append("productCategories", [this.productCategory]);
+      formData.append(
+        "generalProduct",
+        this.$store.getters.nonCustomGeneralProducts[this.productCategory].id
+      );
       formData.append("skuCode", this.productSkuCode);
-      try {
-        const res = await this.$http.post(`/products`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: this.$store.getters.adminAuthJwt
-          }
-        });
-        if (res.status === 200) {
-          this.responseResult = "success";
-          this.$emit("product-added", res.data.product);
-        } else this.responseResult = "fail";
-      } catch (err) {
-        this.responseResult = "fail";
+
+      const newProduct = await this.addProduct(formData);
+      this.responseResult = newProduct ? "success" : "fail";
+      if (this.responseResult === "success") {
+        this.$emit("product-added", newProduct);
       }
-      //if no errors, send post request
     }
   }
 };
@@ -152,13 +152,6 @@ h2 {
 }
 .sizeRow {
   max-height: 50px;
-}
-.main {
-  background-image: url("~@/assets/black-wall-texture.png") !important;
-  background-repeat: repeat;
-  background-size: 400px 400px;
-  background-color: black !important;
-  border-radius: 10px !important;
 }
 @media screen and (min-width: 800px) {
   .main {

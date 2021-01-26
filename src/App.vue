@@ -3,19 +3,47 @@
     <appbar />
     <v-main class="main-app">
       <router-view />
-      <v-overlay z-index="12" opacity="0.8" v-if="showAd" :value="true">
-        <div class="my-10" v-click-outside="closeAd">
-          <v-btn icon @click="closeAd">
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-          <v-img
-            :src="adImage"
-            :height="adImageSize"
-            :width="adImageSize"
-            class="image-class"
-          ></v-img>
-        </div>
-      </v-overlay>
+      <!-- <v-container>
+        <v-row justify="center" align="center">
+          <v-overlay
+            class="d-block"
+            z-index="12"
+            opacity="0.8"
+            v-if="showAnnouncement"
+            :value="true"
+          >
+            <div v-click-outside="closeAnnouncement">
+              <v-btn icon @click="closeAnnouncement">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+              <v-img
+                :src="announcementImage"
+                :max-height="announcementImageSize"
+                :max-width="announcementImageSize"
+              ></v-img>
+            </div>
+          </v-overlay>
+        </v-row>
+      </v-container> -->
+      <v-row justify="center">
+        <v-dialog v-model="showAnnouncement" dark overlay-opacity="0.5">
+          <v-card @click="closeAnnouncement" color="rgba(0, 0, 0, 0.5)">
+            <v-btn icon @click="closeAnnouncement">
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+            <v-card-actions class="d-flex justify-center align-center">
+              <v-img
+                contain
+                :src="announcementImage"
+                :width="'100%'"
+                :height="'100%'"
+                :max-height="announcementImageSize"
+                :max-width="announcementImageSize"
+              ></v-img>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-row>
     </v-main>
 
     <footer-component />
@@ -25,70 +53,29 @@
 <script>
 import Appbar from "./components/Appbar";
 import FooterComponent from "./components/FooterComponent";
+import { validateTokenMixin } from "@/mixins/utilityMixins";
+import { setUserMixin, setAnnouncementMixin } from "@/mixins/apiMixins";
 
 export default {
   name: "App",
-
+  mixins: [validateTokenMixin, setUserMixin, setAnnouncementMixin],
   components: {
     Appbar,
     FooterComponent
   },
   data: () => ({
-    showAd: false,
-    adImage: null,
-    adImageSize: 500,
+    showAnnouncement: false,
+    announcementImage: null,
+    announcementImageSize: process.env.VUE_APP_ANNOUNCEMENT_IMAGE_SIZE,
     dataFetched: false
   }),
   methods: {
-    getAd: async function() {
-      try {
-        const res = await this.$http.get("/offers");
-        if (res.status !== 200 || !res.data.ad) return;
-        this.adImage = res.data.ad.image;
-        if (!this.adImage) throw Error("fail");
-        this.showAd = true;
-      } catch (err) {
-        return;
-      }
+    getAnnouncement: async function() {
+      this.announcementImage = await this.setAnnouncement();
+      if (this.announcementImage) this.showAnnouncement = true;
     },
-    closeAd: function() {
-      this.showAd = false;
-    },
-    parseJwt: function(token) {
-      const base64Url = token.split(".")[1];
-      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-      const jsonPayload = decodeURIComponent(
-        atob(base64)
-          .split("")
-          .map(function(c) {
-            return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-          })
-          .join("")
-      );
-      return JSON.parse(jsonPayload);
-    },
-    validateToken: function(token) {
-      if (token) {
-        const jwtObject = this.parseJwt(token);
-        if (Date.now() >= jwtObject.exp * 1000) {
-          return "expired";
-        } else {
-          return "valid";
-        }
-      } else {
-        return "invalid";
-      }
-    },
-    getUser: async function(token) {
-      const res = await this.$http.get(`/users/me`, {
-        headers: { Authorization: token }
-      });
-      if (res.status === 200) {
-        this.$store.dispatch("setUser", res.data.user);
-        this.$store.dispatch("setAuthJwt", token);
-        this.$store.dispatch("setLoggedInStatus", true);
-        return true;
-      } else return false;
+    closeAnnouncement: function() {
+      this.showAnnouncement = false;
     }
   },
   watch: {
@@ -102,15 +89,17 @@ export default {
   },
   mounted: async function() {
     document.title = "Loongallery";
+
     if (
       this.$route.name !== "admin" &&
       this.$route.name !== "admin-login" &&
-      this.$route.name !== "404"
+      this.$route.name !== "not-found" &&
+      this.$route.name !== "error"
     ) {
       const authJwt = localStorage.getItem("auth_jwt");
       const tokenValidationResult = this.validateToken(authJwt);
 
-      if (tokenValidationResult === "valid" && this.getUser(authJwt)) {
+      if (tokenValidationResult === "valid" && this.setUser(authJwt)) {
         this.dataFetched = true;
         return;
       } else {
@@ -124,9 +113,11 @@ export default {
     if (
       this.$route.name !== "admin" &&
       this.$route.name !== "admin-login" &&
+      this.$route.name !== "not-found" &&
+      this.$route.name !== "error" &&
       !this.$store.getters.loggedIn
     ) {
-      await this.getAd();
+      await this.getAnnouncement();
     }
 
     this.dataFetched = true;
@@ -134,6 +125,8 @@ export default {
 };
 </script>
 <style>
+@import "./assets/styles/commonStyles.css";
+
 .v-application .white {
   background-color: transparent !important;
   border-color: transparent !important;

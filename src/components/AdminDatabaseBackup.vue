@@ -5,8 +5,8 @@
       <v-row>
         <v-col cols="12" class="d-flex justify-center">
           <p>
-            Please note that doing multiple backups would eventually affect your
-            storage size on the server side.
+            Please contact the developers team as soon as possible if you had
+            any problems doing the backup.
           </p>
         </v-col>
       </v-row>
@@ -29,8 +29,10 @@
 </template>
 
 <script>
+import { backupMixin } from "@/mixins/apiMixins";
 export default {
-  name: "admin-edit-prices",
+  name: "admin-database-backup",
+  mixins: [backupMixin],
   data: () => ({
     dataFetched: false,
     responseResult: "none"
@@ -48,19 +50,26 @@ export default {
       document.body.appendChild(link);
       link.click();
     },
-    getBackup: function() {
-      const url = "/database-backup";
-      this.$http({
-        method: "get",
-        url,
-        responseType: "arraybuffer",
-        headers: { Authorization: this.$store.getters.adminAuthJwt }
-      })
-        .then(response => {
-          this.forceFileDownload(response);
-          this.responseResult = "success";
-        })
-        .catch(() => (this.responseResult = "fail"));
+    getBackup: async function() {
+      const response = await this.backup();
+      if (response) {
+        this.forceFileDownload(response);
+        this.responseResult = "success";
+      } else {
+        this.responseResult = "fail";
+      }
+
+      // this.$http({
+      //   method: "get",
+      //   url: "/database-backup",
+      //   responseType: "arraybuffer",
+      //   headers: { Authorization: this.$store.getters.adminAuthJwt }
+      // })
+      //   .then(response => {
+      //     this.forceFileDownload(response);
+      //     this.responseResult = "success";
+      //   })
+      //   .catch(() => (this.responseResult = "fail"));
     }
   },
   mounted() {
@@ -77,12 +86,5 @@ h2 {
 }
 .sizeRow {
   max-height: 50px;
-}
-.main {
-  background-image: url("~@/assets/sketch-texture.jpg") !important;
-  background-repeat: repeat;
-  background-size: 600px 600px;
-  background-color: black !important;
-  border-radius: 10px !important;
 }
 </style>

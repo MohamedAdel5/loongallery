@@ -100,7 +100,7 @@
               <v-btn
                 class="my-4"
                 color="secondary"
-                @click="signup"
+                @click="signupSubmit"
                 :disabled="!agreement"
                 >Signup</v-btn
               >
@@ -116,9 +116,11 @@
 </template>
 
 <script>
+import { signupMixin } from "@/mixins/apiMixins";
+
 export default {
   name: "signup",
-
+  mixins: [signupMixin],
   data: () => ({
     valid: false,
     signupFail: null,
@@ -171,59 +173,38 @@ export default {
   },
 
   methods: {
-    signup: async function() {
+    signupSubmit: async function() {
       this.$refs.form.validate();
       if (this.valid) {
-        try {
-          const phoneNumbers = new Set([this.phone1]);
-          if (this.phone2) phoneNumbers.add(this.phone2);
-          if (this.phone3) phoneNumbers.add(this.phone3);
-          const res = await this.$http.post("/authentication/signup", {
-            name: this.name,
-            phoneNumbers: Array.from(phoneNumbers),
-            addresses: [
-              `المدينة:${this.city || "لم يذكر"}. 
+        const phoneNumbers = new Set([this.phone1]);
+        if (this.phone2) phoneNumbers.add(this.phone2);
+        if (this.phone3) phoneNumbers.add(this.phone3);
+        const newUserObject = {
+          name: this.name,
+          phoneNumbers: Array.from(phoneNumbers),
+          addresses: [
+            `المدينة:${this.city || "لم يذكر"}. 
 الشارع:${this.street || "لم يذكر"}. 
 الشقة:${this.appartment || "لم يذكر"}. 
 العنوان بالتحديد: ${this.address}.`
-            ],
-            email: this.email,
-            password: this.password
-          });
+          ],
+          email: this.email,
+          password: this.password
+        };
 
-          if (res.status === 200) {
-            localStorage.setItem("auth_jwt", res.data.token);
-
-            this.$store.dispatch("setUser", res.data.user);
-            this.$store.dispatch("setAuthJwt", res.data.token);
-            this.$store.dispatch("setLoggedInStatus", true);
-
-            this.$router.push(`/home`);
-          } else {
-            this.signupFail = true;
-          }
-        } catch (err) {
-          this.signupFail = true;
-        }
+        this.signupFail = !(await this.signup(newUserObject));
       }
     }
   },
   beforeMount() {
     if (this.$store.getters.loggedIn) {
-      this.$router.push(`/home`);
+      this.$router.push(`/home`).catch(() => {});
     }
   }
 };
 </script>
 
 <style scoped>
-.main {
-  background-image: url("~@/assets/sketch-texture.jpg") !important;
-  background-repeat: repeat;
-  background-size: 600px 600px;
-  /* background-color: black !important; */
-  border-radius: 10px !important;
-}
 .signup {
   font-family: "Advent Pro";
   font-size: 40px;

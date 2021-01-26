@@ -93,14 +93,14 @@
             />
 
             <v-select
-              v-if="shippingMethod === 'To A Metro Station'"
+              v-if="shippingMethod === 1"
               label="Select A Metro Station."
               v-model="metroStation"
               :items="metroStations"
               :rules="metroStationRules"
             />
 
-            <template v-if="shippingMethod === 'To Home'">
+            <template v-if="shippingMethod === 0">
               <h2 class="font-weight-light">Home Address</h2>
               <template v-if="isLoggedIn">
                 <v-label>Choose an existing address</v-label>
@@ -142,12 +142,7 @@
                 ></v-text-field>
               </template>
             </template>
-            <template
-              v-if="
-                shippingMethod ===
-                  'Receive It From Our Location (No Shipping Fees)'
-              "
-            >
+            <template v-if="shippingMethod === 2">
               <v-select
                 label="Select One Of Our Locations"
                 v-model="receiveLocation"
@@ -166,7 +161,7 @@
               <v-col cols="12">
                 <b class="secondary--text">Total Price: </b>
                 <span>{{ totalPrice }} LE + Shipping Fees</span>
-                <span v-if="!shippingMethod"
+                <span v-if="!shippingMethod && shippingMethod !== 0"
                   ><br />Choose a shipping method to show shipping fees</span
                 >
                 <span v-else
@@ -191,9 +186,21 @@
 </template>
 
 <script>
+import {
+  setMetroStationsMixin,
+  setOurLocationsMixin,
+  setShippingFeesMixin,
+  makeOrderMixin
+} from "@/mixins/apiMixins";
+
 export default {
   name: "order-info",
-
+  mixins: [
+    setMetroStationsMixin,
+    setOurLocationsMixin,
+    setShippingFeesMixin,
+    makeOrderMixin
+  ],
   data: () => ({
     dataFetched: false,
 
@@ -211,11 +218,7 @@ export default {
     metroStation: undefined,
     receiveLocation: undefined,
     shippingMethod: "",
-    shippingMethods: [
-      "To Home",
-      "To A Metro Station",
-      "Receive It From Our Location (No Shipping Fees)"
-    ],
+    shippingMethods: [],
 
     metroStations: [],
     ourLocationsShort: [],
@@ -252,7 +255,9 @@ export default {
     addressRules: [v => !!v || "Address is required"],
     metroStationRules: [v => !!v || "You have to choose a metro station"],
     receiveLocationRules: [v => !!v || "You have to choose a receive location"],
-    shippingMethodRules: [v => !!v || "You have to choose a shipping method"],
+    shippingMethodRules: [
+      v => !!v || v == 0 || "You have to choose a shipping method"
+    ],
     homeAddressRules: [
       v => v === "" || !!v || "You have to choose a home address"
     ]
@@ -277,19 +282,9 @@ export default {
       return total;
     },
     shippingFees() {
-      const shippingFees = this.$store.getters.shippingFees;
-      return this.shippingMethod === "To Home"
-        ? shippingFees.home
-        : this.shippingMethod === "To A Metro Station"
-        ? shippingFees.metro
-        : shippingFees.ourLocation;
-    },
-    shortShippingMethod() {
-      return this.shippingMethod === "To Home"
-        ? "home"
-        : this.shippingMethod === "To A Metro Station"
-        ? "metro"
-        : "ourLocation";
+      const shippingFees = this.$store.getters.shippingFees[this.shippingMethod]
+        .fees;
+      return shippingFees;
     }
   },
 
@@ -314,7 +309,8 @@ export default {
         customerName,
         customerPhoneNumbers: Array.from(customerPhoneNumbers),
         customerAddress,
-        shippingMethod: this.shortShippingMethod,
+        // shippingMethod: this.shortShippingMethod,
+        shippingMethod: this.shippingMethod,
         products: JSON.parse(JSON.stringify(this.$store.getters.cart))
       };
       if (this.isLoggedIn) order.userID = this.$store.getters.user._id;
@@ -330,30 +326,22 @@ export default {
         }
       }
       formData.append("body", JSON.stringify(order));
-
-      try {
-        let options = { "Content-Type": "multipart/form-data" };
-        if (this.isLoggedIn)
-          options["headers"] = { Authorization: this.$store.getters.authJwt };
-        const res = await this.$http.post(`/orders`, formData, options);
-        if (res.status === 200) {
-          this.message = "";
-          this.$emit("ordered-successfully", "success");
-          this.$store.dispatch("emptyCart");
-        } else {
-          this.message = "";
-          throw new Error("fail");
-          // this.$store.dispatch("emptyCart");
-        }
-      } catch (err) {
-        this.message = "";
+      let options = { "Content-Type": "multipart/form-data" };
+      if (this.isLoggedIn)
+        options["headers"] = { Authorization: this.$store.getters.authJwt };
+      const result = await this.makeOrder(formData, options);
+      if (result) {
+        this.$emit("ordered-successfully", "success");
+        this.$store.dispatch("emptyCart");
+      } else {
         this.$emit("ordered-successfully", "fail");
       }
+      this.message = "";
     },
     formatChosenAddress() {
       let address = "";
       switch (this.shippingMethod) {
-        case "To Home":
+        case 0:
           address = `التسليم للمنزل. `;
           if (this.chosenAddress.length > 0) {
             address += `${this.chosenAddress}`;
@@ -364,10 +352,10 @@ export default {
 العنوان بالتحديد: ${this.address}.`;
           }
           break;
-        case "To A Metro Station":
+        case 1:
           address = `التسليم لمحطة المترو ${this.metroStation}. `;
           break;
-        case "Receive It From Our Location (No Shipping Fees)":
+        case 2:
           address = ` :التسليم من مقر الشركة ${this.receiveLocation}. `;
           break;
       }
@@ -378,31 +366,11 @@ export default {
     }
   },
   mounted: async function() {
-    try {
-      let res;
-      res = await this.$http.get(`/global-variables/metroStations`);
-      if (res.status === 200) this.metroStations = res.data.metroStations;
-      else throw new Error("fail");
-
-      res = await this.$http.get(`/global-variables/ourLocations`);
-      if (res.status === 200) {
-        this.ourLocationsShort = res.data.ourLocations.map(
-          location => location.short
-        );
-        this.ourLocationsLong = res.data.ourLocations.map(
-          location => location.long
-        );
-      } else throw new Error("fail");
-
-      if (Object.keys(this.$store.getters.shippingFees).length === 0) {
-        res = await this.$http.get(`/global-variables/shippingFees`);
-        if (res.status === 200)
-          this.$store.dispatch("setShippingFees", res.data.shippingFees);
-        else throw new Error("fail");
-      }
-    } catch (err) {
-      err;
-    }
+    this.metroStations = await this.setMetroStations();
+    let ourLocations = await this.setOurLocations();
+    this.ourLocationsShort = ourLocations.ourLocationsShort;
+    this.ourLocationsLong = ourLocations.ourLocationsLong;
+    await this.setShippingFees();
 
     if (this.isLoggedIn) {
       //Get the user's phone numbers and addresses and assign them to phone1, phone2, phone3 and addresses
@@ -412,17 +380,19 @@ export default {
       this.name = this.user.name;
     }
 
+    this.shippingMethods = [];
+    const shippingMethods = this.$store.getters.shippingFees;
+    let i = 0;
+    for (let method of shippingMethods) {
+      this.shippingMethods.push({
+        text: method.name_en,
+        value: i
+      });
+      i += 1;
+    }
     this.dataFetched = true;
   }
 };
 </script>
 
-<style scoped>
-.main {
-  background-image: url("~@/assets/sketch-texture.jpg") !important;
-  background-repeat: repeat;
-  background-size: 600px 600px;
-  /* background-color: black !important; */
-  border-radius: 10px !important;
-}
-</style>
+<style scoped></style>

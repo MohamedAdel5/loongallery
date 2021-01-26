@@ -110,19 +110,16 @@
             <v-container>
               <v-row><h3 class="secondary--text">Shipping Fees</h3></v-row>
               <v-container>
-                <v-row
-                  v-for="(shippingMethod, j) in Object.entries(shippingFees)"
-                  :key="j"
-                >
+                <v-row v-for="(shippingMethod, j) in shippingFees" :key="j">
                   <v-col cols="12" sm="8" md="4">
-                    <v-label>{{ shippingMethod[0] }}:</v-label>
+                    <v-label>{{ shippingMethod.name_en }}:</v-label>
                     <v-text-field
                       min="0"
                       single-line
                       filled
                       suffix="LE"
                       :rules="numberRules"
-                      v-model.number="modifiedShippingFees[shippingMethod[0]]"
+                      v-model.number="modifiedShippingFees[j].fees"
                       type="number"
                     ></v-text-field>
                   </v-col>
@@ -200,8 +197,26 @@
 </template>
 
 <script>
+import {
+  setCustomGeneralProductsMixin,
+  setNonCustomGeneralProductsMixin,
+  setShippingFeesMixin,
+  setFacePriceMixin,
+  editGeneralProductMixin,
+  editGlobalVariableMixin
+} from "@/mixins/apiMixins";
+
 export default {
   name: "admin-edit-prices",
+  mixins: [
+    setCustomGeneralProductsMixin,
+    setNonCustomGeneralProductsMixin,
+    setShippingFeesMixin,
+    setFacePriceMixin,
+    editGeneralProductMixin,
+    editGlobalVariableMixin
+  ],
+
   data: () => ({
     dataFetched: false,
     modifiedCustomGeneralProducts: {},
@@ -216,6 +231,7 @@ export default {
       v => /^[0-9]+$/.test(v) || "Only numbers are allowed!"
     ]
   }),
+
   methods: {
     applyGlobalVariableChanges: async function(
       globalVariableName,
@@ -224,32 +240,16 @@ export default {
       this.$refs.form.validate();
       if (this.valid) {
         //if no errors, send post request
-        let editedSuccessfully = "success";
-        try {
-          // console.log(this.modifiedFacePrice);
-          // console.log(this.modifiedShippingFees);
-
-          const updatedGlobalVariableObject = {};
-          updatedGlobalVariableObject[
-            globalVariableName
-          ] = modifiedGlobalVariable;
-
-          // console.log(updatedGlobalVariableObject);
-
-          const res = await this.$http.patch(
-            `/global-variables/${globalVariableName}`,
-            {
-              updatedGlobalVariableObject
-            },
-            {
-              headers: { Authorization: this.$store.getters.adminAuthJwt }
-            }
-          );
-          if (res.status !== 200) editedSuccessfully = "fail";
-        } catch (err) {
-          editedSuccessfully = "fail";
-        }
-        this.editedSuccessfully = editedSuccessfully;
+        const updatedGlobalVariableObject = {};
+        updatedGlobalVariableObject[
+          globalVariableName
+        ] = modifiedGlobalVariable;
+        this.editedSuccessfully = (await this.editGlobalVariable(
+          globalVariableName,
+          updatedGlobalVariableObject
+        ))
+          ? "success"
+          : "fail";
       }
     },
     applyGeneralProductChanges: async function(
@@ -258,34 +258,17 @@ export default {
     ) {
       this.$refs.form.validate();
       if (this.valid) {
-        let editedSuccessfully = "success";
-        try {
-          const generalProducts =
-            productType === "custom"
-              ? this.modifiedCustomGeneralProducts
-              : this.modifiedNonCustomGeneralProducts;
-
-          // console.log(
-          //   productType,
-          //   generalProducts,
-          //   generalProductName,
-          //   generalProducts[generalProductName].sizesPrices
-          // );
-
-          const res = await this.$http.patch(
-            `/general-products/${generalProductName}`,
-            {
-              sizesPrices: generalProducts[generalProductName].sizesPrices
-            },
-            {
-              headers: { Authorization: this.$store.getters.adminAuthJwt }
-            }
-          );
-          if (res.status !== 200) editedSuccessfully = "fail";
-        } catch (err) {
-          editedSuccessfully = "fail";
-        }
-        this.editedSuccessfully = editedSuccessfully;
+        const generalProducts =
+          productType === "custom"
+            ? this.modifiedCustomGeneralProducts
+            : this.modifiedNonCustomGeneralProducts;
+        const newSizesPrices = generalProducts[generalProductName].sizesPrices;
+        this.editedSuccessfully = (await this.editGeneralProduct(
+          generalProductName,
+          newSizesPrices
+        ))
+          ? "success"
+          : "fail";
       }
     },
     closeEditedSuccessfullyWindow: function() {
@@ -307,45 +290,20 @@ export default {
     }
   },
   mounted: async function() {
-    try {
-      let res;
-      if (Object.keys(this.$store.getters.customGeneralProducts).length === 0) {
-        res = await this.$http.get(`/general-products/custom-products`);
-        this.$store.dispatch("setCustomGeneralProducts", res.data.products);
-      }
-      if (
-        Object.keys(this.$store.getters.nonCustomGeneralProducts).length === 0
-      ) {
-        res = await this.$http.get(`/general-products/non-custom-products`);
-        this.$store.dispatch("setNonCustomGeneralProducts", res.data.products);
-      }
+    await this.setCustomGeneralProducts();
+    await this.setNonCustomGeneralProducts();
+    await this.setShippingFees();
+    await this.setFacePrice();
+    this.modifiedCustomGeneralProducts = JSON.parse(
+      JSON.stringify(this.customGeneralProducts)
+    );
+    this.modifiedNonCustomGeneralProducts = JSON.parse(
+      JSON.stringify(this.nonCustomGeneralProducts)
+    );
+    this.modifiedShippingFees = JSON.parse(JSON.stringify(this.shippingFees));
+    this.modifiedFacePrice = this.facePrice;
 
-      if (Object.keys(this.$store.getters.shippingFees).length === 0) {
-        res = await this.$http.get(`/global-variables/shippingFees`);
-        if (res.status === 200)
-          this.$store.dispatch("setShippingFees", res.data.shippingFees);
-        else throw new Error("fail");
-      }
-      if (!this.$store.getters.facePrice) {
-        res = await this.$http.get(`/global-variables/facePrice`);
-        if (res.status === 200)
-          this.$store.dispatch("setFacePrice", res.data.facePrice);
-        else throw new Error("fail");
-      }
-
-      this.modifiedCustomGeneralProducts = JSON.parse(
-        JSON.stringify(this.customGeneralProducts)
-      );
-      this.modifiedNonCustomGeneralProducts = JSON.parse(
-        JSON.stringify(this.nonCustomGeneralProducts)
-      );
-      this.modifiedShippingFees = JSON.parse(JSON.stringify(this.shippingFees));
-      this.modifiedFacePrice = this.facePrice;
-
-      this.dataFetched = true;
-    } catch (err) {
-      err;
-    }
+    this.dataFetched = true;
   }
 };
 </script>
@@ -358,12 +316,5 @@ h2 {
 }
 .sizeRow {
   max-height: 50px;
-}
-.main {
-  background-image: url("~@/assets/sketch-texture.jpg") !important;
-  background-repeat: repeat;
-  background-size: 600px 600px;
-  background-color: black !important;
-  border-radius: 10px !important;
 }
 </style>

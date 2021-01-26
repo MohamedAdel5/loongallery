@@ -41,32 +41,25 @@
 </template>
 
 <script>
+import { setPreviewSizesMixin } from "@/mixins/apiMixins";
+
 export default {
-  name: "drawing-styles-examples",
+  name: "preview-sizes",
+  mixins: [setPreviewSizesMixin],
   data() {
     return {
-      imageSize: "200px",
+      imageSize: `${process.env.VUE_APP_PREVIEW_IMAGE_SIZE}px`,
       dataFetched: false,
       sizesPreview: null
     };
   },
   methods: {
-    getSizesPreview: async function() {
-      try {
-        const res = await this.$http.get("/global-variables/sizesPreview");
-        if (res.status === 200) this.sizesPreview = res.data.sizesPreview;
-        else throw new Error("fail");
-      } catch (err) {
-        this.$router.push("/error");
-      }
-    },
     goBack: function() {
       this.$router.go(-1);
     }
   },
   mounted: async function() {
-    await this.getSizesPreview();
-
+    this.sizesPreview = await this.setPreviewSizes();
     this.dataFetched = true;
   }
 };
@@ -84,13 +77,6 @@ export default {
 h2 {
   font-size: 20px;
   font-weight: normal;
-}
-.main {
-  background-image: url("~@/assets/sketch-texture.jpg") !important;
-  background-repeat: repeat;
-  background-size: 600px 600px;
-  background-color: black !important;
-  border-radius: 10px !important;
 }
 .v-image {
   border: solid 1px !important;

@@ -153,8 +153,14 @@
 </template>
 
 <script>
+import {
+  changeAddressMixin,
+  changePhoneNumbersMixin
+} from "@/mixins/apiMixins";
+
 export default {
   name: "user-edit-profile",
+  mixins: [changeAddressMixin, changePhoneNumbersMixin],
   data: () => ({
     dataFetched: false,
     responseResult: "none",
@@ -195,79 +201,40 @@ export default {
     applyPhoneChanges: async function() {
       this.$refs.phoneNumbersForm.validate();
       if (!this.validPhoneNumbers) return;
-      try {
-        // console.log(this.modifiedFacePrice);
-        // console.log(this.modifiedShippingFees);
+      const phoneNumbers = new Set([this.phone1]);
+      if (this.phone2) phoneNumbers.add(this.phone2);
+      if (this.phone3) phoneNumbers.add(this.phone3);
 
-        const phoneNumbers = new Set([this.phone1]);
-        if (this.phone2) phoneNumbers.add(this.phone2);
-        if (this.phone3) phoneNumbers.add(this.phone3);
-
-        const res = await this.$http.patch(
-          `/users/me/change-phone-numbers`,
-          {
-            phoneNumbers: Array.from(phoneNumbers)
-          },
-          {
-            headers: { Authorization: this.$store.getters.authJwt }
-          }
-        );
-        if (res.status === 200) {
-          this.responseResult = "success";
-          this.$store.dispatch("editUser", {
-            phoneNumbers: Array.from(phoneNumbers)
-          });
-        } else this.responseResult = "fail";
-      } catch (err) {
-        this.responseResult = "fail";
-      }
+      this.responseResult = (await this.changePhoneNumbers(phoneNumbers))
+        ? "success"
+        : "fail";
     },
     applyAddressChanges: async function() {
       this.$refs.addressesForm.validate();
       if (!this.validAddresses) return;
-      try {
-        // console.log(this.modifiedFacePrice);
-        // console.log(this.modifiedShippingFees);
 
-        const addresses = [
-          `المدينة:${this.city1 || "لم يذكر"}. 
+      const addresses = [
+        `المدينة:${this.city1 || "لم يذكر"}. 
 الشارع:${this.street1 || "لم يذكر"}. 
 الشقة:${this.appartment1 || "لم يذكر"}. 
 العنوان بالتحديد: ${this.address1}.`
-        ];
-
-        if (this.address2) {
-          addresses.push(`المدينة:${this.city2 || "لم يذكر"}. 
+      ];
+      if (this.address2) {
+        addresses.push(`المدينة:${this.city2 || "لم يذكر"}. 
 الشارع:${this.street2 || "لم يذكر"}. 
 الشقة:${this.appartment2 || "لم يذكر"}. 
 العنوان بالتحديد: ${this.address2}.`);
-        }
-
-        if (this.address3) {
-          addresses.push(`المدينة:${this.city3 || "لم يذكر"}. 
+      }
+      if (this.address3) {
+        addresses.push(`المدينة:${this.city3 || "لم يذكر"}. 
 الشارع:${this.street3 || "لم يذكر"}. 
 الشقة:${this.appartment3 || "لم يذكر"}. 
 العنوان بالتحديد: ${this.address3}.`);
-        }
-
-        const res = await this.$http.patch(
-          `/users/me/change-addresses`,
-          {
-            addresses
-          },
-          {
-            headers: { Authorization: this.$store.getters.authJwt }
-          }
-        );
-        if (res.status === 200) {
-          this.responseResult = "success";
-          this.$store.dispatch("editUser", {
-            addresses
-          });
-        } else this.responseResult = "fail";
-      } catch (err) {
-        this.responseResult = "fail";
       }
+
+      this.responseResult = (await this.changeAddress(addresses))
+        ? "success"
+        : "fail";
     },
     closeResponseResultWindow: function() {
       this.responseResult = "none";
@@ -291,12 +258,5 @@ h2 {
 }
 .sizeRow {
   max-height: 50px;
-}
-.main {
-  background-image: url("~@/assets/sketch-texture.jpg") !important;
-  background-repeat: repeat;
-  background-size: 600px 600px;
-  background-color: black !important;
-  border-radius: 10px !important;
 }
 </style>

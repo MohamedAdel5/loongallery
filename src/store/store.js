@@ -65,6 +65,8 @@ const store = new Vuex.Store({
       state.nonCustomGeneralProducts = {};
       for (let val of generalProducts) {
         state.nonCustomGeneralProducts[val.productName] = {
+          id: val._id,
+          productName_Ar: val.productName_Ar,
           sizesPrices: val.sizesPrices
         };
       }
@@ -73,6 +75,8 @@ const store = new Vuex.Store({
       state.customGeneralProducts = {};
       for (let val of generalProducts) {
         state.customGeneralProducts[val.productName] = {
+          id: val._id,
+          productName_Ar: val.productName_Ar,
           sizesPrices: val.sizesPrices
         };
       }

@@ -42,35 +42,27 @@
 </template>
 
 <script>
+import { setDrawingStylesExamplesMixin } from "@/mixins/apiMixins";
+
 export default {
   name: "drawing-styles-examples",
+  mixins: [setDrawingStylesExamplesMixin],
+
   data() {
     return {
-      imageSize: "200px",
+      imageSize: `${process.env.VUE_APP_PREVIEW_IMAGE_SIZE}px`,
       dataFetched: false,
 
       drawingStylesExamples: null
     };
   },
   methods: {
-    getDrawingStylesExamples: async function() {
-      try {
-        const res = await this.$http.get(
-          "/global-variables/drawingStylesExamples"
-        );
-        if (res.status === 200)
-          this.drawingStylesExamples = res.data.drawingStylesExamples;
-        else throw new Error("fail");
-      } catch (err) {
-        this.$router.push("/error");
-      }
-    },
     goBack: function() {
       this.$router.go(-1);
     }
   },
   mounted: async function() {
-    await this.getDrawingStylesExamples();
+    this.drawingStylesExamples = await this.setDrawingStylesExamples();
 
     this.dataFetched = true;
   }
@@ -89,13 +81,6 @@ export default {
 h2 {
   font-size: 20px;
   font-weight: normal;
-}
-.main {
-  background-image: url("~@/assets/sketch-texture.jpg") !important;
-  background-repeat: repeat;
-  background-size: 600px 600px;
-  background-color: black !important;
-  border-radius: 10px !important;
 }
 .v-image {
   border: solid 1px !important;

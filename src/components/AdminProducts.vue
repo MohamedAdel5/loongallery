@@ -1,5 +1,5 @@
 <template>
-  <v-card tile flat class="main" v-if="dataFetched">
+  <v-card flat class="main" v-if="dataFetched">
     <h2 class="text-center py-10 secondary--text">Our Products</h2>
     <v-container class="d-flex flex-column align-content-space-around">
       <v-row class="d-flex flex-row">
@@ -254,7 +254,7 @@
             </v-col>
             <v-col cols="4"></v-col>
             <v-col cols="4">
-              <v-btn color="success" @click="deleteProduct">
+              <v-btn color="success" @click="deleteProductSubmit">
                 Yes
               </v-btn>
             </v-col>
@@ -275,9 +275,12 @@
 import ProductCard from "./ProductCard";
 import AdminAddProduct from "./AdminAddProduct";
 import AdminEditProduct from "./AdminEditProduct";
+import productsMixin from "@/mixins/productsMixin";
+import { deleteProductMixin } from "@/mixins/apiMixins";
 
 export default {
   name: "admin-products",
+  mixins: [productsMixin, deleteProductMixin],
   components: {
     ProductCard,
     AdminAddProduct,
@@ -285,101 +288,22 @@ export default {
   },
   watch: {},
   data: () => ({
-    dataFetched: false,
-    productsCount: 0,
-    elementsPerRow: 3,
-    elementsPerPage: process.env.VUE_APP_PRODUCTS_ELEMENTS_PER_PAGE,
-    page: 1,
-    pagesCount: 1,
     productToEdit: null,
     productToDeleteID: null,
-    deletedSuccessfully: "none",
-
-    tabIndex: 0,
-    tabs: [
-      { title: "Decoration Tableau", category: "Decoration tableau" },
-      { title: "Mersal", category: "Mersal" }
-    ],
-    showAddNewProductWindow: false,
-    showEditProductWindow: false,
-    showDeleteAssertionWindow: false,
-    // sortByOptions: [
-    //   {
-    //     text: "Recently Added",
-    //     value: "recent",
-    //   },
-    //   {
-    //     text: "Price: Low To High",
-    //     value: "price",
-    //   },
-    //   {
-    //     text: "Price: High To Low",
-    //     value: "-price",
-    //   },
-    // ],
-    generalProductPrices: [],
-    products: []
+    deletedSuccessfully: "none"
   }),
-  computed: {
-    currentCategory() {
-      return this.tabs[this.tabIndex].category;
-    }
-  },
+  computed: {},
   methods: {
-    deleteProduct: async function() {
-      try {
-        const res = await this.$http.delete(
-          `/products/${this.productToDeleteID}`,
-          {
-            headers: { Authorization: this.$store.getters.adminAuthJwt }
-          }
-        );
-        if (res.status === 200) {
-          this.deletedSuccessfully = "success";
-          // this.showDeleteAssertionWindow = false;
-          // const productIndex = this.products.findIndex(
-          //   product => product._id === this.productToDeleteID
-          // );
-          // this.products.splice(productIndex, 1);
-          // this.productsCount--;
-          await this.getProducts(this.currentCategory, 1);
-          this.productToDeleteID = null;
-        } else this.deletedSuccessfully = "fail";
-      } catch (err) {
-        this.deletedSuccessfully = "fail";
+    deleteProductSubmit: async function() {
+      this.deletedSuccessfully = (await this.deleteProduct(
+        this.productToDeleteID
+      ))
+        ? "success"
+        : "fail";
+      if (this.deletedSuccessfully === "success") {
+        await this.getProducts(this.currentCategory, 1);
+        this.productToDeleteID = null;
       }
-    },
-    getProducts: async function(category, pageNumber) {
-      let res = await this.$http.get(
-        `/products?productCategories=${category}&page=${pageNumber}&limit=${this.elementsPerPage}`
-      );
-      // console.log(res);
-      this.pagesCount = Math.ceil(res.data.totalSize / this.elementsPerPage);
-      this.productsCount = res.data.size;
-
-      this.products = res.data.products;
-      // console.log(this.products);
-      let generalProductPrices;
-      if (
-        Object.keys(this.$store.getters.nonCustomGeneralProducts).length === 0
-      ) {
-        res = await this.$http.get(`/general-products/non-custom-products`);
-
-        this.$store.dispatch("setNonCustomGeneralProducts", res.data.products);
-
-        const generalProductIndex = res.data.products.findIndex(
-          product => product.productName === category
-        );
-        generalProductPrices = Object.values(
-          res.data.products[generalProductIndex].sizesPrices
-        );
-      } else {
-        generalProductPrices = Object.values(
-          this.$store.getters.nonCustomGeneralProducts[category].sizesPrices
-        );
-      }
-      this.generalProductPrices = generalProductPrices;
-      this.page = pageNumber;
     },
     updateProduct(product) {
       const index = this.products.findIndex(p => p._id === product._id);
@@ -388,10 +312,9 @@ export default {
       }
     },
     addProduct(product) {
-      console.log(product);
       if (
         this.products.length < Number(this.elementsPerPage) &&
-        this.currentCategory === product.productCategories[0]
+        this.currentCategory === product.generalProduct.productName
       ) {
         this.products.push(product);
         this.productsCount++;
@@ -408,11 +331,6 @@ export default {
     closeEditProductWindow: function() {
       this.showEditProductWindow = false;
     }
-  },
-  mounted: async function() {
-    //default tab is decoration tableaus
-    await this.getProducts("Decoration tableau", this.page);
-    this.dataFetched = true;
   }
 };
 </script>
@@ -422,12 +340,5 @@ h2 {
   font-family: "Advent Pro";
   font-size: 30px;
   font-weight: bolder;
-}
-.main {
-  background-image: url("~@/assets/sketch-texture.jpg") !important;
-  background-repeat: repeat;
-  background-size: 600px 600px;
-  background-color: black !important;
-  border-radius: 10px !important;
 }
 </style>

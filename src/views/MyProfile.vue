@@ -97,7 +97,8 @@ export default {
   },
   methods: {},
   mounted: async function() {
-    if (!this.$store.getters.authJwt) this.$router.push("/login");
+    if (!this.$store.getters.authJwt)
+      this.$router.push("/login").catch(() => {});
     this.dataFetched = true;
   }
 };

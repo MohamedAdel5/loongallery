@@ -156,7 +156,7 @@ export default {
       this.$router.push(`/home`).catch(() => {});
     },
     toProfile: function() {
-      this.$router.push(`/my-profile`);
+      this.$router.push(`/my-profile`).catch(() => {});
     }
   }
 };

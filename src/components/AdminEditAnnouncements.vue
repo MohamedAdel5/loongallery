@@ -1,6 +1,6 @@
 <template>
   <v-card class="main" light v-if="dataFetched">
-    <h2 class="text-center py-10 secondary--text">Change Ad</h2>
+    <h2 class="text-center py-10 secondary--text">Change Announcement</h2>
     <v-container class="d-flex flex-column align-content-space-around pa-10">
       <v-row>
         <v-col cols="12">
@@ -12,7 +12,7 @@
             </v-row>
             <v-row>
               <v-col sm="3" cols="12" class="pa-0 d-flex align-center">
-                <v-label>Ad Image (500x500)pixels</v-label>
+                <v-label>Announcement Image (500x500)pixels</v-label>
               </v-col>
               <v-col sm="9" cols="12" class="pa-0">
                 <v-file-input
@@ -24,7 +24,10 @@
               </v-col>
             </v-row>
             <v-row>
-              <v-text-field v-model="adText" label="Ad text"></v-text-field>
+              <v-text-field
+                v-model="announcementText"
+                label="Announcement text"
+              ></v-text-field>
             </v-row>
 
             <v-row class="mt-10">
@@ -37,32 +40,35 @@
             <v-row class="mt-10">
               <v-col cols="12" class="pa-0" sm="6">
                 <v-alert type="error" v-if="responseResult === 'fail'"
-                  >Failed to change the ad. Please contact the developers
-                  team.</v-alert
+                  >Failed to change the announcement. Please contact the
+                  developers team.</v-alert
                 >
                 <v-alert type="success" v-if="responseResult === 'success'"
-                  >Ad is updated successfully.</v-alert
+                  >Announcement is updated successfully.</v-alert
                 >
               </v-col>
             </v-row>
             <v-divider></v-divider>
             <v-row class="mt-10">
               <v-col cols="12" class="pa-0" sm="6">
-                <v-btn @click="deleteAd" max-width="200px" color="error"
-                  >Remove Ad</v-btn
+                <v-btn
+                  @click="deleteAnnouncement"
+                  max-width="200px"
+                  color="error"
+                  >Remove Announcement</v-btn
                 ><span>{{ deleteMessage }}</span>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12" class="pa-0" sm="6">
                 <v-alert type="error" v-if="deleteResponseResult === 'fail'"
-                  >Failed to delete the ad. Please contact the developers
-                  team.</v-alert
+                  >Failed to delete the announcement. Please contact the
+                  developers team.</v-alert
                 >
                 <v-alert
                   type="success"
                   v-if="deleteResponseResult === 'success'"
-                  >Ad is deleted successfully.</v-alert
+                  >Announcement is deleted successfully.</v-alert
                 >
               </v-col>
             </v-row>
@@ -74,13 +80,19 @@
 </template>
 
 <script>
+import {
+  editAnnouncementMixin,
+  deleteAnnouncementMixin
+} from "@/mixins/apiMixins";
+
 export default {
-  name: "admin-edit-ads",
+  name: "admin-edit-announcements",
+  mixins: [editAnnouncementMixin, deleteAnnouncementMixin],
   data: () => ({
     dataFetched: false,
     valid: false,
-    adText: null,
-    adImage: null,
+    announcementText: null,
+    announcementImage: null,
     fileRules: [v => !!v || "Select a file."],
     responseResult: "none",
     message: "",
@@ -89,7 +101,7 @@ export default {
   }),
   methods: {
     selectFile(file) {
-      this.adImage = file;
+      this.announcementImage = file;
     },
     applyChanges: async function() {
       this.$refs.form.validate();
@@ -99,38 +111,18 @@ export default {
       this.message = "Please wait...";
 
       let formData = new FormData();
-      formData.append("adImage", this.adImage);
-      formData.append("adText", [this.adText]);
-      try {
-        const res = await this.$http.post(`/offers`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: this.$store.getters.adminAuthJwt
-          }
-        });
-        if (res.status === 200) {
-          this.responseResult = "success";
-        } else this.responseResult = "fail";
-      } catch (err) {
-        this.responseResult = "fail";
-      }
+      formData.append("announcementImage", this.announcementImage);
+      formData.append("announcementText", [this.announcementText]);
+      this.responseResult = (await this.editAnnouncement(formData))
+        ? "success"
+        : "fail";
       this.message = "";
     },
-    deleteAd: async function() {
+    deleteAnnouncement: async function() {
       this.deleteMessage = "Please wait...";
-
-      try {
-        const res = await this.$http.delete(`/offers`, {
-          headers: {
-            Authorization: this.$store.getters.adminAuthJwt
-          }
-        });
-        if (res.status === 200) {
-          this.deleteResponseResult = "success";
-        } else this.deleteResponseResult = "fail";
-      } catch (err) {
-        this.deleteResponseResult = "fail";
-      }
+      this.deleteResponseResult = (await this.deleteAnnouncement())
+        ? "success"
+        : "fail";
       this.deleteMessage = "";
     }
   },
@@ -148,12 +140,5 @@ h2 {
 }
 .sizeRow {
   max-height: 50px;
-}
-.main {
-  background-image: url("~@/assets/sketch-texture.jpg") !important;
-  background-repeat: repeat;
-  background-size: 600px 600px;
-  background-color: black !important;
-  border-radius: 10px !important;
 }
 </style>

@@ -62,7 +62,7 @@
             color="secondary"
             dark
             @input="
-              getOrders(page);
+              getOrders(page, 'admin');
               disableAllLists();
             "
           >
@@ -138,7 +138,7 @@
                   <tr>
                     <td>Shipping Method</td>
                     <td>
-                      {{ order.shippingMethod }}
+                      {{ orderShippingMethod(order) }}
                     </td>
                   </tr>
                   <tr>
@@ -212,17 +212,10 @@
                               </tr>
 
                               <tr>
-                                <td>Product Categories</td>
+                                <td>Product Category</td>
 
                                 <td>
-                                  <tr
-                                    v-for="category in product.productCategories"
-                                    :key="category"
-                                  >
-                                    {{
-                                      category
-                                    }}
-                                  </tr>
+                                  {{ product.generalProduct.productName }}
                                 </td>
                               </tr>
                               <tr>
@@ -261,17 +254,9 @@
                               </tr>
 
                               <tr>
-                                <td>Product Categories</td>
-
+                                <td>Product Category</td>
                                 <td>
-                                  <tr
-                                    v-for="category in product.productCategories"
-                                    :key="category"
-                                  >
-                                    {{
-                                      category
-                                    }}
-                                  </tr>
+                                  {{ product.generalProduct.productName }}
                                 </td>
                               </tr>
                               <tr>
@@ -312,7 +297,7 @@
             <v-btn
               color="success"
               small
-              @click="setDelivered(order)"
+              @click="handleDelivered(order)"
               v-if="!order.delivered"
               >Mark As delivered</v-btn
             >
@@ -340,7 +325,7 @@
             </v-col>
             <v-col cols="4"></v-col>
             <v-col cols="4">
-              <v-btn color="success" @click="deleteOrder()">
+              <v-btn color="success" @click="deleteOrderSubmit()">
                 Yes
               </v-btn>
             </v-col>
@@ -383,21 +368,17 @@
 </template>
 
 <script>
+import ordersMixin from "@/mixins/ordersMixin.js";
+import {
+  setSeenMixin,
+  setDeliveredMixin,
+  deleteOrderMixin
+} from "@/mixins/apiMixins";
 export default {
   name: "admin-orders",
+  mixins: [ordersMixin, setSeenMixin, setDeliveredMixin, deleteOrderMixin],
   data() {
     return {
-      dataFetched: false,
-      page: 1,
-      elementsPerPage: process.env.VUE_APP_ORDERS_ELEMENTS_PER_PAGE,
-      pagesCount: null,
-      totalCount: null,
-      ordersCount: null,
-      unseenCount: null,
-      undeliveredCount: null,
-      ordersListsEnable: undefined,
-      orders: [],
-      imageSize: 200,
       deletedSuccessfully: "none",
       showDeleteAssertionWindow: false,
       orderToDeleteIndex: null,
@@ -406,91 +387,30 @@ export default {
     };
   },
   methods: {
-    totalPrice(index) {
-      let totalPrice = 0;
-      this.orders[index].products.forEach(product => {
-        totalPrice += product.price;
-      });
-      return totalPrice + this.orders[index].shippingFees;
-    },
     handleSeen: async function(order) {
-      //Send a request to alter the seen status
       //Check if the request went well then set the seen status here
-      try {
-        const res = await this.$http.patch(
-          `/orders/${order._id}/seen`,
-          {},
-          {
-            headers: { Authorization: this.$store.getters.adminAuthJwt }
-          }
-        );
-        if (res.status === 200) {
-          order.seen = true;
-        } else this.showSeenError = true;
-      } catch (err) {
-        this.showSeenError = true;
+      this.showSeenError = !(await this.setSeen(order._id));
+      if (!this.showSeenError) {
+        order.seen = true;
+        this.unseenCount -= 1;
       }
     },
-    setDelivered: async function(order) {
-      //Send a request to alter the delivered status
+    handleDelivered: async function(order) {
       //Check if the request went well then set the delivered status here
-      try {
-        const res = await this.$http.patch(
-          `/orders/${order._id}/delivered`,
-          {},
-          {
-            headers: { Authorization: this.$store.getters.adminAuthJwt }
-          }
-        );
-        if (res.status === 200) {
-          order.delivered = true;
-        } else this.showDeliveredError = true;
-      } catch (err) {
-        this.showDeliveredError = true;
+      this.showDeliveredError = !(await this.setDelivered(order._id));
+      if (!this.showDeliveredError) {
+        order.delivered = true;
+        this.undeliveredCount -= 1;
       }
     },
-    hasACustomOrder: order => {
-      for (let i = 0; i < order.products.length; i++) {
-        if (order.products[i].productCategories.includes("Custom")) return true;
-      }
-      return false;
-    },
-    isCustomProduct: product => {
-      if (product.productCategories.includes("Custom")) return true;
-      else return false;
-    },
-    getOrders: async function(pageNumber) {
-      let res = await this.$http.get(
-        `/orders?sort=-date&page=${pageNumber}&limit=${this.elementsPerPage}`,
-        {
-          headers: { Authorization: this.$store.getters.adminAuthJwt }
-        }
-      );
-      // console.log(res);
-      this.pagesCount = Math.ceil(res.data.totalSize / this.elementsPerPage);
-      this.totalCount = res.data.totalSize;
-      this.ordersCount = res.data.size;
-      this.unseenCount = res.data.totalUnseen;
-      this.undeliveredCount = res.data.totalUndelivered;
-
-      this.orders = res.data.orders;
-
-      this.page = pageNumber;
-    },
-    deleteOrder: async function() {
-      try {
-        const res = await this.$http.delete(
-          `/orders/${this.orders[this.orderToDeleteIndex]._id}`,
-          {
-            headers: { Authorization: this.$store.getters.adminAuthJwt }
-          }
-        );
-        if (res.status === 200) {
-          this.deletedSuccessfully = "success";
-          await this.getOrders(1);
-        } else this.deletedSuccessfully = "fail";
-      } catch (err) {
-        this.deletedSuccessfully = "fail";
+    deleteOrderSubmit: async function() {
+      this.deletedSuccessfully = (await this.deleteOrder(
+        this.orders[this.orderToDeleteIndex]._id
+      ))
+        ? "success"
+        : "fail";
+      if (this.deletedSuccessfully == "success") {
+        await this.getOrders(1, "admin");
       }
       this.orderToDeleteIndex = null;
     },
@@ -503,36 +423,13 @@ export default {
     },
     closeDeliveredErrorWindow: function() {
       this.showDeliveredError = false;
-    },
-    disableAllLists: function() {
-      for (let i = 0; i < this.ordersListsEnable.length; i++) {
-        this.ordersListsEnable[i] = false;
-      }
     }
-  },
-  mounted: async function() {
-    //default tab is decoration tableaus
-    await this.getOrders(this.page);
-    this.ordersListsEnable = new Array(this.orders.length);
-    this.disableAllLists();
-    this.dataFetched = true;
   }
 };
 </script>
 
 <style scoped>
-.main {
-  background-image: url("~@/assets/sketch-texture.jpg") !important;
-  background-repeat: repeat;
-  background-size: 600px 600px;
-  background-color: black !important;
-  border-radius: 10px !important;
-}
 td {
   padding: 2px;
-}
-.image-class {
-  border: 1px solid grey;
-  border-radius: 5px;
 }
 </style>

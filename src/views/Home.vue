@@ -2,20 +2,20 @@
   <div id="home">
     <banner />
     <v-container class="d-flex flex-column justify-center pt-0 pb-16">
-      <v-card tile flat class="main">
+      <v-card tile flat color="rgba(0,0,0,0)">
         <v-tabs
           v-model="tabIndex"
           show-arrows
-          background-color="white"
+          background-color="rgba(0,0,0,0)"
           centered
           dark
-          class="secondary--text main"
+          class="secondary--text"
         >
           <v-tab
             v-for="item in tabs"
             @click="redirect(item.component)"
             :key="item.component"
-            class="secondary--text main"
+            class="secondary--text"
           >
             {{ item.title }}
           </v-tab>
@@ -37,7 +37,18 @@
           style="z-index: 11"
           :to="'/shopping-cart'"
         >
-          <v-icon>mdi-cart</v-icon>
+          <template v-if="$store.getters.cart.length > 0">
+            <v-badge
+              color="red"
+              style="z-index: 15"
+              :content="String($store.getters.cart.length)"
+            >
+              <v-icon>mdi-cart</v-icon>
+            </v-badge>
+          </template>
+          <template v-else>
+            <v-icon>mdi-cart</v-icon>
+          </template>
         </v-btn>
       </template>
       <span v-if="productIsAdded">A Product Is Added To Your Cart.</span>
@@ -52,7 +63,7 @@ import OurProducts from "../components/OurProducts";
 import CustomizedPortraits from "../components/CustomizedPortraits";
 
 export default {
-  name: "Home",
+  name: "home",
   components: {
     Banner,
     OurProducts,
@@ -72,7 +83,7 @@ export default {
   methods: {
     redirect: function(component) {
       if (component !== this.$route.params.component)
-        this.$router.push(`/home/${component}`);
+        this.$router.push(`/home/${component}`).catch(() => {});
     },
     showProductAddedTooltip: function() {
       this.productIsAdded = true;
@@ -113,10 +124,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.main {
-  /* background-image: url("~@/assets/black-wall-texture.png") !important;
-  background-repeat: repeat; */
-  background-color: transparent !important;
-}
-</style>
+<style scoped></style>

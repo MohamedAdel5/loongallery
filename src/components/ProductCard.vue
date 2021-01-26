@@ -19,7 +19,7 @@ export default {
   props: ["imageSrc", "title", "prices"],
   data() {
     return {
-      imageSize: "300px"
+      imageSize: `${process.env.VUE_APP_PRODUCT_IMAGE_SIZE}px`
     };
   },
   methods: {

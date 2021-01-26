@@ -16,7 +16,7 @@
             </v-col>
             <v-col cols="12" sm="6" class="mt-10">
               <h2 class="font-weight-light mb-10">
-                {{ product.productCategories[0] }}
+                {{ product.generalProduct.productName }}
               </h2>
 
               <v-row class="mt-4">
@@ -107,7 +107,16 @@
           style="z-index: 11"
           :to="'/shopping-cart'"
         >
-          <v-icon>mdi-cart</v-icon>
+          <template v-if="$store.getters.cart.length > 0">
+            <v-badge
+              color="red"
+              style="z-index: 15"
+              :content="String($store.getters.cart.length)"
+            >
+              <v-icon>mdi-cart</v-icon>
+            </v-badge>
+          </template>
+          <template v-else> <v-icon>mdi-cart</v-icon> </template>
         </v-btn>
       </template>
       <span v-if="productIsAdded">A Product Is Added To Your Cart.</span>
@@ -117,12 +126,18 @@
 </template>
 
 <script>
+import {
+  setOneProductMixin,
+  setNonCustomGeneralProductsMixin
+} from "@/mixins/apiMixins";
+
 export default {
   name: "show-product",
+  mixins: [setOneProductMixin, setNonCustomGeneralProductsMixin],
   data() {
     return {
       quantity: 1,
-      imageSize: 300,
+      imageSize: process.env.VUE_APP_PRODUCT_IMAGE_SIZE,
       showCartTooltip: false,
       productIsAdded: false,
       product: null,
@@ -144,7 +159,8 @@ export default {
           productID: this.product._id,
           skuCode: this.product.skuCode,
           image: this.product.image,
-          productCategories: this.product.productCategories,
+          // productCategories: this.product.productCategories,
+          generalProduct: this.product.generalProduct._id,
           size: this.size,
           numberOfFaces: 0,
           quantity: this.quantity,
@@ -180,30 +196,13 @@ export default {
   },
   created: async function() {
     //Send request to get the product of the given id this.$route.params.id
-    let res = await this.$http.get(`/products/${this.$route.params.id}`);
-    this.product = res.data.product;
+    this.product = await this.setOneProduct(this.$route.params.id);
+    await this.setNonCustomGeneralProducts();
 
-    const productCategory = this.product.productCategories[0];
-
-    let generalProductSizesPrices;
-    if (
-      Object.keys(this.$store.getters.nonCustomGeneralProducts).length === 0
-    ) {
-      res = await this.$http.get(`/general-products/non-custom-products`);
-
-      this.$store.dispatch("setNonCustomGeneralProducts", res.data.products);
-
-      const generalProductIndex = res.data.products.findIndex(
-        product => product.productName === productCategory
-      );
-      generalProductSizesPrices =
-        res.data.products[generalProductIndex].sizesPrices;
-    } else {
-      generalProductSizesPrices = this.$store.getters.nonCustomGeneralProducts[
-        productCategory
-      ].sizesPrices;
-    }
-    this.generalProductSizesPrices = generalProductSizesPrices;
+    const productCategory = this.product.generalProduct.productName;
+    this.generalProductSizesPrices = this.$store.getters.nonCustomGeneralProducts[
+      productCategory
+    ].sizesPrices;
 
     this.dataFetched = true;
   }
@@ -215,12 +214,5 @@ export default {
 }
 .portrait {
   border: solid 1px black;
-}
-.main {
-  background-image: url("~@/assets/sketch-texture.jpg") !important;
-  background-repeat: repeat;
-  background-size: 600px 600px;
-  background-color: black !important;
-  border-radius: 10px !important;
 }
 </style>

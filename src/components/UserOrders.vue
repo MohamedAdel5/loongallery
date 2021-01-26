@@ -48,7 +48,7 @@
             color="secondary"
             dark
             @input="
-              getOrders(page);
+              getOrders(page, 'user');
               disableAllLists();
             "
           >
@@ -108,7 +108,7 @@
                   <tr>
                     <td>Shipping Method</td>
                     <td>
-                      {{ order.shippingMethod }}
+                      {{ orderShippingMethod(order) }}
                     </td>
                   </tr>
                   <tr>
@@ -152,8 +152,8 @@
                                 <td>{{ product.skuCode }}</td>
                               </tr>
                               <tr>
-                                <td>Product ID</td>
-                                <td>{{ product.productID }}</td>
+                                <td>SKU code</td>
+                                <td>{{ product.skuCode }}</td>
                               </tr>
                               <tr>
                                 <td>Product Image</td>
@@ -185,17 +185,10 @@
                                 <td>{{ product.price }}</td>
                               </tr>
                               <tr>
-                                <td>Product Categories</td>
+                                <td>Product Category</td>
 
                                 <td>
-                                  <tr
-                                    v-for="category in product.productCategories"
-                                    :key="category"
-                                  >
-                                    {{
-                                      category
-                                    }}
-                                  </tr>
+                                  {{ product.generalProduct.productName }}
                                 </td>
                               </tr>
                             </template>
@@ -233,17 +226,10 @@
                                 <td>{{ product.price }}</td>
                               </tr>
                               <tr>
-                                <td>Product Categories</td>
+                                <td>Product Category</td>
 
                                 <td>
-                                  <tr
-                                    v-for="category in product.productCategories"
-                                    :key="category"
-                                  >
-                                    {{
-                                      category
-                                    }}
-                                  </tr>
+                                  {{ product.generalProduct.productName }}
                                 </td>
                               </tr>
                             </template>
@@ -275,21 +261,14 @@
 </template>
 
 <script>
+import ordersMixin from "@/mixins/ordersMixin.js";
+
 export default {
   name: "user-orders",
+  mixins: [ordersMixin],
+
   data() {
-    return {
-      dataFetched: false,
-      page: 1,
-      elementsPerPage: process.env.VUE_APP_PRODUCTS_ELEMENTS_PER_PAGE,
-      pagesCount: null,
-      totalCount: null,
-      ordersCount: null,
-      undeliveredCount: null,
-      ordersListsEnable: undefined,
-      orders: [],
-      imageSize: 200
-    };
+    return {};
   },
   beforeMount() {
     this.ordersListsEnable = new Array(this.orders.length);
@@ -297,70 +276,12 @@ export default {
       this.ordersListsEnable[i] = false;
     }
   },
-  methods: {
-    totalPrice(index) {
-      let totalPrice = 0;
-      this.orders[index].products.forEach(product => {
-        totalPrice += product.price;
-      });
-      return totalPrice + this.orders[index].shippingFees;
-    },
-    hasACustomOrder: order => {
-      for (let i = 0; i < order.products.length; i++) {
-        if (order.products[i].productCategories.includes("Custom")) return true;
-      }
-      return false;
-    },
-    isCustomProduct: product => {
-      if (product.productCategories.includes("Custom")) return true;
-      else return false;
-    },
-    getOrders: async function(pageNumber) {
-      let res = await this.$http.get(
-        `/users/me/orders?sort=-date&page=${pageNumber}&limit=${this.elementsPerPage}`,
-        {
-          headers: { Authorization: this.$store.getters.authJwt }
-        }
-      );
-      // console.log(res);
-      this.pagesCount = Math.ceil(res.data.totalSize / this.elementsPerPage);
-      this.totalCount = res.data.totalSize;
-      this.ordersCount = res.data.size;
-      this.undeliveredCount = res.data.totalUndelivered;
-
-      this.orders = res.data.orders;
-
-      this.page = pageNumber;
-    },
-    disableAllLists: function() {
-      for (let i = 0; i < this.ordersListsEnable.length; i++) {
-        this.ordersListsEnable[i] = false;
-      }
-    }
-  },
-  mounted: async function() {
-    //default tab is decoration tableaus
-    await this.getOrders(this.page);
-    this.ordersListsEnable = new Array(this.orders.length);
-    this.disableAllLists();
-    this.dataFetched = true;
-  }
+  methods: {}
 };
 </script>
 
 <style scoped>
-.main {
-  background-image: url("~@/assets/sketch-texture.jpg") !important;
-  background-repeat: repeat;
-  background-size: 600px 600px;
-  background-color: black !important;
-  border-radius: 10px !important;
-}
 td {
   padding: 2px;
-}
-.image-class {
-  border: 1px solid grey;
-  border-radius: 5px;
 }
 </style>

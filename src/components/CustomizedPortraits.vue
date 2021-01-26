@@ -56,7 +56,7 @@
               <v-text-field
                 :disabled="!addToCartButton"
                 v-model="numberOfFaces"
-                min="1"
+                min="0"
                 :rules="numberOfFacesRules"
                 type="number"
                 label="How many people are in the image?"
@@ -263,8 +263,13 @@
 </template>
 
 <script>
+import {
+  setCustomGeneralProductsMixin,
+  setFacePriceMixin
+} from "@/mixins/apiMixins";
 export default {
   name: "customized-portraits",
+  mixins: [setCustomGeneralProductsMixin, setFacePriceMixin],
   computed: {
     portraitSizes() {
       if (this.$store.getters.customDrawingStyles.includes(this.drawingStyle)) {
@@ -293,7 +298,7 @@ export default {
     }
   },
   data: () => ({
-    uploadedImage: null, //Visit this page for upload info https://bezkoder.com/vuetify-file-upload/
+    uploadedImage: null,
     drawingStyle: "",
     size: "",
     quantity: 1,
@@ -301,7 +306,7 @@ export default {
     numberOfFaces: 1,
     numberOfFacesRules: [
       v => v === 0 || !!v || "Number of people in the image is required.",
-      v => v >= 0 || "People number must be greater than or equal 0"
+      v => v >= 1 || "People number must be greater than or equal 1"
     ],
     addToCartButton: true,
     valid: false,
@@ -321,7 +326,10 @@ export default {
       const product = {
         image: this.uploadedImage,
         size: this.size,
-        productCategories: ["Custom", this.drawingStyle],
+        // productCategories: ["Custom", this.drawingStyle],
+        generalProduct: this.$store.getters.customGeneralProducts[
+          this.drawingStyle
+        ].id,
         numberOfFaces: this.numberOfFaces,
         quantity: this.quantity,
         price: this.price
@@ -343,17 +351,9 @@ export default {
     }
   },
   created: async function() {
-    if (Object.keys(this.$store.getters.customGeneralProducts).length === 0) {
-      const res = await this.$http.get(`/general-products/custom-products`);
+    await this.setCustomGeneralProducts();
+    await this.setFacePrice();
 
-      this.$store.dispatch("setCustomGeneralProducts", res.data.products);
-    }
-
-    if (!this.$store.getters.facePrice) {
-      const res = await this.$http.get(`/global-variables/facePrice`);
-
-      this.$store.dispatch("setFacePrice", res.data.facePrice);
-    }
     this.dataFetched = true;
   }
 };
@@ -367,12 +367,5 @@ h2 {
 }
 .sizeRow {
   max-height: 50px;
-}
-.main {
-  background-image: url("~@/assets/sketch-texture.jpg") !important;
-  background-repeat: repeat;
-  background-size: 600px 600px;
-  background-color: black !important;
-  border-radius: 10px !important;
 }
 </style>

@@ -71,18 +71,19 @@ import AdminProducts from "../components/AdminProducts";
 import AdminOrders from "../components/AdminOrders";
 import AdminEditPrices from "../components/AdminEditPrices";
 import AdminDatabaseBackup from "../components/AdminDatabaseBackup";
-import AdminEditAds from "../components/AdminEditAds";
+import AdminEditAnnouncements from "../components/AdminEditAnnouncements";
 import AdminSendEmails from "../components/AdminSendEmails";
-
+import { validateAdminTokenMixin } from "@/mixins/utilityMixins";
 export default {
-  name: "Admin",
+  name: "admin",
+  mixins: [validateAdminTokenMixin],
   components: {
     AdminProducts,
     AdminOrders,
     Banner,
     AdminEditPrices,
     AdminDatabaseBackup,
-    AdminEditAds,
+    AdminEditAnnouncements,
     AdminSendEmails
   },
   data() {
@@ -111,8 +112,8 @@ export default {
         },
         {
           icon: "mdi-television-guide",
-          title: "Edit Ads",
-          component: "admin-edit-ads"
+          title: "Edit Announcements",
+          component: "admin-edit-announcements"
         },
         {
           icon: "mdi-email",
@@ -137,34 +138,7 @@ export default {
       }
     }
   },
-  methods: {
-    parseJwt: function(token) {
-      const base64Url = token.split(".")[1];
-      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-      const jsonPayload = decodeURIComponent(
-        atob(base64)
-          .split("")
-          .map(function(c) {
-            return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-          })
-          .join("")
-      );
-      return JSON.parse(jsonPayload);
-    },
-    validateAdminToken: function(token) {
-      if (token) {
-        const jwtObject = this.parseJwt(token);
-        if (!jwtObject.admin) return "invalid";
-        if (Date.now() >= jwtObject.exp * 1000) {
-          return "expired";
-        } else {
-          return "valid";
-        }
-      } else {
-        return "invalid";
-      }
-    }
-  },
+  methods: {},
   mounted: async function() {
     const adminAuthJwt = sessionStorage.getItem("admin_auth_jwt");
     const tokenValidationResult = this.validateAdminToken(adminAuthJwt);
@@ -184,7 +158,7 @@ export default {
     this.$store.dispatch("setAdminLoggedInStatus", false);
     this.$store.dispatch("setAdmin", {});
 
-    this.$router.push("/6324789123/admin/login");
+    this.$router.push("/6324789123/admin/login").catch(() => {});
   }
 };
 </script>

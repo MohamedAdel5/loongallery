@@ -92,8 +92,11 @@
 </template>
 
 <script>
+import { editProductMixin } from "@/mixins/apiMixins";
+
 export default {
   name: "admin-edit-product",
+  mixins: [editProductMixin],
   props: ["productID", "skuCodeProp"],
   computed: {
     categories() {
@@ -119,30 +122,26 @@ export default {
       // if (!this.valid) {
       //   return;
       // }
-      if (this.skuCode.length > 20) this.responseResult = "fail";
+      if (this.skuCode.length > 20) {
+        this.responseResult = "fail";
+        return;
+      }
+
       let formData = new FormData();
 
       if (this.uploadedImage !== null)
         formData.append("image", this.uploadedImage);
       if (this.skuCode.length !== 0) formData.append("skuCode", this.skuCode);
       if (this.productCategory.length !== 0)
-        formData.append("productCategories", [this.productCategory]);
-
-      try {
-        const res = await this.$http.patch(
-          `/products/${this.productID}`,
-          formData,
-          {
-            "Content-Type": "multipart/form-data",
-            headers: { Authorization: this.$store.getters.adminAuthJwt }
-          }
+        formData.append(
+          "generalProduct",
+          this.$store.getters.nonCustomGeneralProducts[this.productCategory].id
         );
-        if (res.status === 200) {
-          this.responseResult = "success";
-          this.$emit("product-updated", res.data.product);
-        } else this.responseResult = "fail";
-      } catch (err) {
-        this.responseResult = "fail";
+
+      const product = await this.editProduct(formData);
+      this.responseResult = product ? "success" : "fail";
+      if (this.responseResult == "success") {
+        this.$emit("product-updated", product);
       }
     }
   }
@@ -157,13 +156,6 @@ h2 {
 }
 .sizeRow {
   max-height: 50px;
-}
-.main {
-  background-image: url("~@/assets/black-wall-texture.png") !important;
-  background-repeat: repeat;
-  background-size: 400px 400px;
-  background-color: black !important;
-  border-radius: 10px !important;
 }
 @media screen and (min-width: 800px) {
   .main {
