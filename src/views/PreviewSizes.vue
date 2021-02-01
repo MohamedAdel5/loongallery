@@ -1,14 +1,15 @@
 <template>
   <v-container v-if="dataFetched">
     <v-card tile flat class="main mb-16">
-      <v-card-title class="sizes-card-title d-block text-center secondary--text"
-        >Sizes Preview</v-card-title
+      <v-card-title
+        class="sizes-card-title d-block text-center secondary--text"
+        >{{ $t("preview_sizes") }}</v-card-title
       >
       <v-container>
         <template v-for="(size, i) in sizesPreview">
           <v-row class="pb-4" :key="i">
             <v-col cols="12">
-              <h2 class="secondary--text">{{ size.size }}</h2>
+              <h2 class="secondary--text ltr_dir">{{ size.size }}</h2>
               <v-container
                 class="d-flex flex-row justify-start align-center flex-wrap pa-0 pt-4"
               >
@@ -30,9 +31,9 @@
         </template>
         <v-row>
           <v-col cols="12" class="d-flex justify-end pt-16 pb-0">
-            <v-btn @click="goBack" max-width="200px" color="secondary"
-              >Go Back</v-btn
-            >
+            <v-btn @click="goBack" max-width="200px" color="secondary">{{
+              $t("back")
+            }}</v-btn>
           </v-col>
         </v-row>
       </v-container>

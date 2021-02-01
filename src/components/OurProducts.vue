@@ -1,13 +1,12 @@
 <template>
   <v-card flat class="main mb-16" v-if="dataFetched">
-    <h2 class="text-center pt-10 secondary--text">Our Products</h2>
+    <h2 class="text-center pt-10 secondary--text">{{ $t("our_products") }}</h2>
     <v-container class="d-flex flex-column align-content-space-around pt-0">
       <v-row style="color: rgba(50, 46, 46, 0.87)">
         <v-container class="pt-0">
           <p class="text-center caption">
             <a href="#productsDetails" class="brown--text">
-              Please read the section underneath this page to find details about
-              our products materials and our delivery times.
+              {{ $t("products_details") }}
             </a>
           </p>
         </v-container>
@@ -26,7 +25,7 @@
           @click="getProducts(item.category, 1)"
           class="secondary--text main"
         >
-          {{ item.title }}
+          {{ itemTitle(item) }}
         </v-tab>
       </v-tabs>
       <!-- <v-row>
@@ -89,7 +88,7 @@
             <product-card
               :prices="generalProductPrices"
               :title="
-                `${tabs[tabIndex].title}-${
+                `${itemTitle(tabs[tabIndex])}-${
                   products[(i - 1) * elementsPerRow + (j - 1)].skuCode
                 }`
               "
@@ -120,7 +119,7 @@
             <product-card
               :prices="generalProductPrices"
               :title="
-                `${tabs[tabIndex].title}-${
+                `${itemTitle(tabs[tabIndex])}-${
                   products[
                     Math.floor(productsCount / elementsPerRow) *
                       elementsPerRow +
@@ -235,7 +234,12 @@ export default {
     return {};
   },
   computed: {},
-  methods: {}
+  methods: {
+    itemTitle(item) {
+      if (this.$root.$i18n.locale === "en") return item.title;
+      else return item.title_ar;
+    }
+  }
 };
 </script>
 

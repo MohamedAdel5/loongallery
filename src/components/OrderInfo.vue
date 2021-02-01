@@ -2,14 +2,14 @@
   <v-container v-if="dataFetched">
     <v-row class="d-flex justify-start">
       <v-col cols="12">
-        <v-form v-model="valid" ref="form">
+        <v-form v-model="valid" ref="form" :key="$root.$i18n.locale">
           <v-container
             class="my-2"
             style="border: solid 1px grey; border-radius: 5px"
           >
             <v-text-field
               v-model="name"
-              label="Name"
+              :label="$t('name')"
               :rules="nameRules"
             ></v-text-field>
           </v-container>
@@ -17,7 +17,7 @@
             class="my-2"
             style="border: solid 1px grey; border-radius: 5px"
           >
-            <v-label>Phone Number</v-label>
+            <v-label>{{ $t("phone_number") }}</v-label>
             <template v-if="isLoggedIn">
               <v-combobox
                 v-if="isLoggedIn"
@@ -27,7 +27,7 @@
                 @input.native="updateComboboxValue($event, 'phone1')"
                 prefix="+2"
                 placeholder="011122333"
-                label="First Phone Number(Required)"
+                :label="$t('phone1')"
                 dense
                 class="my-4"
               ></v-combobox>
@@ -39,7 +39,7 @@
                 @input.native="updateComboboxValue($event, 'phone2')"
                 prefix="+2"
                 placeholder="011122333"
-                label="Second Phone Number"
+                :label="$t('phone2')"
                 dense
                 class="my-4"
               ></v-combobox>
@@ -51,7 +51,7 @@
                 @input.native="updateComboboxValue($event, 'phone3')"
                 prefix="+2"
                 placeholder="011122333"
-                label="Third Phone Number"
+                :label="$t('phone3')"
                 dense
                 class="my-4"
               ></v-combobox>
@@ -59,21 +59,21 @@
             <template v-else>
               <v-text-field
                 v-model="phone1"
-                label="First Phone Number (Required)"
+                :label="$t('phone1')"
                 prefix="+2"
                 placeholder="011122333"
                 :rules="mainPhoneRules"
               ></v-text-field>
               <v-text-field
                 v-model="phone2"
-                label="Second Phone Number"
+                :label="$t('phone2')"
                 prefix="+2"
                 placeholder="01001116777"
                 :rules="phoneRules"
               ></v-text-field>
               <v-text-field
                 v-model="phone3"
-                label="Third Phone Number"
+                :label="$t('phone3')"
                 prefix="+2"
                 placeholder="01227799000"
                 :rules="phoneRules"
@@ -88,22 +88,22 @@
               v-model="shippingMethod"
               :items="shippingMethods"
               :menu-props="{ maxHeight: '400' }"
-              label="Select A Shipping Method"
+              :label="$t('select_shipping_method')"
               :rules="shippingMethodRules"
             />
 
             <v-select
               v-if="shippingMethod === 1"
-              label="Select A Metro Station."
+              :label="$t('select_metro_station')"
               v-model="metroStation"
-              :items="metroStations"
+              :items="getMetroStations()"
               :rules="metroStationRules"
             />
 
             <template v-if="shippingMethod === 0">
-              <h2 class="font-weight-light">Home Address</h2>
+              <h2 class="font-weight-light">{{ $t("address") }}</h2>
               <template v-if="isLoggedIn">
-                <v-label>Choose an existing address</v-label>
+                <v-label>{{ $t("select_address") }}</v-label>
                 <v-select
                   v-if="isLoggedIn"
                   v-model="chosenAddress"
@@ -114,14 +114,14 @@
                 ></v-select>
               </template>
               <template v-if="!chosenAddress">
-                <v-label>Or write a new address</v-label>
+                <v-label>{{ $t("or_write_new_address") }}</v-label>
                 <p class="caption">
-                  Please write in Arabic and add any useful details.
+                  {{ $t("address_note") }}
                 </p>
                 <v-textarea
                   v-model="address"
                   filled
-                  label="Detailed Shipping Address"
+                  :label="$t('address_placeholder')"
                   rows="4"
                   counter="1000"
                   :rules="addressRules"
@@ -129,20 +129,23 @@
                 <v-text-field
                   v-model="city"
                   :disabled="!!chosenAddress"
-                  label="City"
+                  :label="$t('city')"
                 ></v-text-field>
                 <v-text-field
                   v-model="street"
-                  label="Street Name/Number"
+                  :label="$t('street')"
+                ></v-text-field>
+                <v-text-field
+                  v-model="building"
+                  :label="$t('building')"
                 ></v-text-field>
                 <v-text-field
                   v-model="appartment"
-                  label="Appartment/Suite number, ..etc"
-                  hint="Write your appartment number."
+                  :label="$t('appartment')"
                 ></v-text-field>
               </template>
             </template>
-            <template v-if="shippingMethod === 2">
+            <!-- <template v-if="shippingMethod === 2">
               <v-select
                 label="Select One Of Our Locations"
                 v-model="receiveLocation"
@@ -154,15 +157,16 @@
                   ourLocationsLong[ourLocationsShort.indexOf(receiveLocation)]
                 }}
               </p>
-            </template>
+            </template> -->
           </v-container>
           <v-container>
             <v-row>
               <v-col cols="12">
-                <b class="secondary--text">Total Price: </b>
-                <span>{{ totalPrice }} LE + Shipping Fees</span>
+                <b class="secondary--text">{{ $t("total_price") }}: </b><br />
+                <span>{{ totalPrice }} LE</span><br />
+                <span> + {{ $t("shipping_fees") }}</span>
                 <span v-if="!shippingMethod && shippingMethod !== 0"
-                  ><br />Choose a shipping method to show shipping fees</span
+                  ><br />{{ $t("choose_shipping_note") }}</span
                 >
                 <span v-else
                   >({{ shippingFees }} LE) =
@@ -176,7 +180,7 @@
             color="secondary"
             :disabled="cartIsEmpty"
             @click="confirmOrder"
-            >Confirm Order</v-btn
+            >{{ $t("confirm_order") }}</v-btn
           >
           <span>{{ message }}</span>
         </v-form>
@@ -188,7 +192,7 @@
 <script>
 import {
   setMetroStationsMixin,
-  setOurLocationsMixin,
+  // setOurLocationsMixin,
   setShippingFeesMixin,
   makeOrderMixin
 } from "@/mixins/apiMixins";
@@ -197,71 +201,72 @@ export default {
   name: "order-info",
   mixins: [
     setMetroStationsMixin,
-    setOurLocationsMixin,
+    // setOurLocationsMixin,
     setShippingFeesMixin,
     makeOrderMixin
   ],
-  data: () => ({
-    dataFetched: false,
+  data() {
+    return {
+      dataFetched: false,
 
-    name: "",
+      name: "",
 
-    phone1: "",
-    phone2: undefined,
-    phone3: undefined,
+      phone1: "",
+      phone2: undefined,
+      phone3: undefined,
 
-    address: undefined,
-    city: undefined,
-    street: undefined,
-    appartment: undefined,
-    chosenAddress: "",
-    metroStation: undefined,
-    receiveLocation: undefined,
-    shippingMethod: "",
-    shippingMethods: [],
+      address: undefined,
+      city: undefined,
+      street: undefined,
+      building: undefined,
+      appartment: undefined,
+      chosenAddress: "",
+      metroStation: undefined,
+      receiveLocation: undefined,
+      shippingMethod: "",
+      // shippingMethods: [],
 
-    metroStations: [],
-    ourLocationsShort: [],
-    ourLocationsLong: [],
+      metroStations: [],
+      metroStations_ar: [],
+      // ourLocationsShort: [],
+      // ourLocationsLong: [],
 
-    valid: false,
-    userPhoneNumbers: undefined,
-    userAddresses: undefined,
+      valid: false,
+      userPhoneNumbers: undefined,
+      userAddresses: undefined,
 
-    message: "",
+      message: "",
 
-    orderedSuccessfully: false,
+      orderedSuccessfully: false,
 
-    nameRules: [
-      v => !!v || "Name is required",
-      v =>
-        /^[\u0600-\u065F\u066A-\u06EF\u06FA-\u06FF]+[\u0600-\u065F\u066A-\u06EF\u06FA-\u06FF- ]*$|^[a-zA-Z]+[a-zA-Z-' ]*$/.test(
-          v
-        ) ||
-        "Must use English or Arabic letters and special characters(space, ',  -)",
-      v => (v && v.length) <= 50 || "Must not exceed 50 characters"
-    ],
-    phoneRules: [
-      v =>
-        v === null ||
-        v === undefined ||
-        /^$|^(01)[0-9]{9}$/.test(v) ||
-        "Wrong phone format"
-    ],
-    mainPhoneRules: [
-      v => !!v || "Phone number is required",
-      v => /^(01)[0-9]{9}$/.test(v) || "Wrong phone format"
-    ],
-    addressRules: [v => !!v || "Address is required"],
-    metroStationRules: [v => !!v || "You have to choose a metro station"],
-    receiveLocationRules: [v => !!v || "You have to choose a receive location"],
-    shippingMethodRules: [
-      v => !!v || v == 0 || "You have to choose a shipping method"
-    ],
-    homeAddressRules: [
-      v => v === "" || !!v || "You have to choose a home address"
-    ]
-  }),
+      nameRules: [
+        v => !!v || this.$t("name_err1"),
+        v =>
+          /^[\u0600-\u065F\u066A-\u06EF\u06FA-\u06FF]+[\u0600-\u065F\u066A-\u06EF\u06FA-\u06FF- ]*$|^[a-zA-Z]+[a-zA-Z-' ]*$/.test(
+            v
+          ) || this.$t("name_err2"),
+        v => (v && v.length) <= 50 || this.$t("name_err3")
+      ],
+      phoneRules: [
+        v =>
+          v === null ||
+          v === undefined ||
+          /^$|^(01)[0-9]{9}$/.test(v) ||
+          this.$t("phone_err1")
+      ],
+      mainPhoneRules: [
+        v => !!v || this.$t("phone_err2"),
+        v => /^(01)[0-9]{9}$/.test(v) || this.$t("phone_err1")
+      ],
+      addressRules: [v => !!v || this.$t("address_err")],
+      metroStationRules: [v => !!v || this.$t("metro_station_err")],
+      receiveLocationRules: [v => !!v || this.$t("receive_location_err")],
+      shippingMethodRules: [
+        v => !!v || v == 0 || this.$t("shipping_method_err")
+      ],
+      homeAddressRules: [v => v === "" || !!v || this.$t("address_err")]
+    };
+  },
 
   computed: {
     isLoggedIn() {
@@ -285,6 +290,19 @@ export default {
       const shippingFees = this.$store.getters.shippingFees[this.shippingMethod]
         .fees;
       return shippingFees;
+    },
+    shippingMethods() {
+      const shippingMethods = [];
+      let i = 0;
+      for (let method of this.$store.getters.shippingFees) {
+        shippingMethods.push({
+          text:
+            this.$root.$i18n.locale === "en" ? method.name_en : method.name_ar,
+          value: i
+        });
+        i += 1;
+      }
+      return shippingMethods;
     }
   },
 
@@ -295,7 +313,7 @@ export default {
       if (!this.valid) {
         return;
       }
-      this.message = "Please wait...";
+      this.message = this.$t("please_wait");
       const customerName = this.name;
 
       //Remove duplicates if exist
@@ -348,6 +366,7 @@ export default {
           } else {
             address += `المدينة:${this.city || "لم يذكر"}. 
 الشارع:${this.street || "لم يذكر"}. 
+العمارة:${this.building || "لم يذكر"}. 
 الشقة:${this.appartment || "لم يذكر"}. 
 العنوان بالتحديد: ${this.address}.`;
           }
@@ -363,13 +382,20 @@ export default {
     },
     updateComboboxValue(input, comboboxIndex) {
       this[comboboxIndex] = input.srcElement.value;
+    },
+    getMetroStations() {
+      if (this.$root.$i18n.locale === "en") return this.metroStations;
+      else return this.metroStations_ar;
     }
   },
   mounted: async function() {
-    this.metroStations = await this.setMetroStations();
-    let ourLocations = await this.setOurLocations();
-    this.ourLocationsShort = ourLocations.ourLocationsShort;
-    this.ourLocationsLong = ourLocations.ourLocationsLong;
+    const data = await this.setMetroStations();
+    this.metroStations = data.metroStations;
+    this.metroStations_ar = data.metroStations_ar;
+
+    // let ourLocations = await this.setOurLocations();
+    // this.ourLocationsShort = ourLocations.ourLocationsShort;
+    // this.ourLocationsLong = ourLocations.ourLocationsLong;
     await this.setShippingFees();
 
     if (this.isLoggedIn) {
@@ -380,16 +406,6 @@ export default {
       this.name = this.user.name;
     }
 
-    this.shippingMethods = [];
-    const shippingMethods = this.$store.getters.shippingFees;
-    let i = 0;
-    for (let method of shippingMethods) {
-      this.shippingMethods.push({
-        text: method.name_en,
-        value: i
-      });
-      i += 1;
-    }
     this.dataFetched = true;
   }
 };

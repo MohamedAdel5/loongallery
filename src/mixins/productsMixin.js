@@ -75,6 +75,7 @@ export default {
     for (let key of Object.keys(this.nonCustomGeneralProducts)) {
       this.tabs.push({
         title: key,
+        title_ar: this.nonCustomGeneralProducts[key].productName_Ar,
         category: key
       });
     }

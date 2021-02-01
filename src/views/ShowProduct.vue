@@ -16,15 +16,15 @@
             </v-col>
             <v-col cols="12" sm="6" class="mt-10">
               <h2 class="font-weight-light mb-10">
-                {{ product.generalProduct.productName }}
+                {{ productName(product) }}
               </h2>
 
               <v-row class="mt-4">
                 <v-col cols="6" class="d-flex justify-left align-center pa-0">
                   <v-label
-                    ><span class="dark--text caption"
-                      >Choose Size (width x height)cm</span
-                    ></v-label
+                    ><span class="dark--text caption">{{
+                      $t("choose_size")
+                    }}</span></v-label
                   >
                 </v-col>
                 <v-col
@@ -36,14 +36,13 @@
                     v-model="size"
                     :items="portraitSizes"
                     standard
-                    label="size"
                   ></v-select>
                 </v-col>
               </v-row>
               <v-row>
-                <router-link class=" blue--text" :to="'/preview-sizes'"
-                  >Preview Sizes</router-link
-                >
+                <router-link class=" blue--text" :to="'/preview-sizes'">{{
+                  $t("preview_sizes")
+                }}</router-link>
               </v-row>
               <v-row class="d-flex justify-left pt-6">
                 <v-text-field
@@ -52,7 +51,7 @@
                   min="1"
                   :rules="quantityRules"
                   type="number"
-                  label="Quantity"
+                  :label="$t('quantity')"
                   dense
                 ></v-text-field>
               </v-row>
@@ -62,7 +61,7 @@
                   class="d-flex justify-left align-center pa-0"
                   sm="6"
                 >
-                  <h4>Price: {{ price }} LE</h4>
+                  <h4>{{ $t("price") }}: {{ price }} LE</h4>
                 </v-col>
                 <v-col cols="12" class="pa-0" sm="6">
                   <v-btn
@@ -74,18 +73,18 @@
                     :disabled="!price"
                     max-width="200px"
                     color="success"
-                    >Add to cart <v-icon>mdi-cart</v-icon></v-btn
+                    >{{ $t("add_to_cart") }} <v-icon>mdi-cart</v-icon></v-btn
                   >
-                  <span v-if="!addToCartButton" class="secondary--text pr-2"
-                    >Product is added to your cart!</span
-                  >
+                  <span v-if="!addToCartButton" class="secondary--text pr-2">{{
+                    $t("product_added_to_cart")
+                  }}</span>
                 </v-col>
               </v-row>
               <v-row>
                 <v-col cols="12" class="d-flex justify-end pt-16 pb-0">
-                  <v-btn @click="goBack" max-width="200px" color="secondary"
-                    >Go Back</v-btn
-                  >
+                  <v-btn @click="goBack" max-width="200px" color="secondary">{{
+                    $t("back")
+                  }}</v-btn>
                 </v-col>
               </v-row>
             </v-col>
@@ -119,8 +118,8 @@
           <template v-else> <v-icon>mdi-cart</v-icon> </template>
         </v-btn>
       </template>
-      <span v-if="productIsAdded">A Product Is Added To Your Cart.</span>
-      <span v-else>View Your Shopping Cart</span>
+      <span v-if="productIsAdded">{{ $t("product_added_to_cart") }}</span>
+      <span v-else>{{ $t("view_shopping_cart") }}</span>
     </v-tooltip>
   </v-container>
 </template>
@@ -183,6 +182,11 @@ export default {
         this.showCartTooltip = false;
         this.productIsAdded = false;
       }, 3000);
+    },
+    productName(product) {
+      if (this.$root.$i18n.locale === "en")
+        return product.generalProduct.productName;
+      else return product.generalProduct.productName_Ar;
     }
   },
   computed: {
@@ -214,5 +218,9 @@ export default {
 }
 .portrait {
   border: solid 1px black;
+}
+.v-select-list,
+.v-select {
+  direction: ltr !important;
 }
 </style>

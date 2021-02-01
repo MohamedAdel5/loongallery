@@ -1,3 +1,15 @@
+<i18n>
+{
+  "en": {
+		"Menu": "Menu"
+		
+  },
+  "ar": {
+		"Menu": "القائمة"
+  }
+}
+</i18n>
+
 <template>
   <div>
     <v-navigation-drawer v-model="drawer" app temporary dark>
@@ -7,7 +19,9 @@
         </v-list-item-avatar>
 
         <v-list-item-content>
-          <v-list-item-title class="primary--text">Menu</v-list-item-title>
+          <v-list-item-title class="primary--text">{{
+            $t("Menu")
+          }}</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
 
@@ -26,7 +40,7 @@
 
             <v-list-item-content>
               <v-list-item-title class="primary--text">{{
-                item.title
+                itemTitle(item)
               }}</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
@@ -44,7 +58,7 @@
 
             <v-list-item-content>
               <v-list-item-title class="primary--text">{{
-                item.title
+                itemTitle(item)
               }}</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
@@ -74,32 +88,43 @@
 
       <v-spacer></v-spacer>
 
-      <v-toolbar-items v-if="$vuetify.breakpoint.smAndUp && !isAdmin">
-        <template v-if="isLoggedIn">
-          <v-btn
-            v-for="item in afterRegisterNavbarTabs"
-            :key="item.title"
-            @click="item.action"
-            color="secondary"
-            depressed
-          >
-            <span class="primary--text">{{ item.title }}</span>
-            <v-icon right class="primary--text">{{ item.icon }}</v-icon>
-          </v-btn>
-        </template>
-        <template v-else>
-          <v-btn
-            v-for="item in beforeRegisterNavbarTabs"
-            :key="item.title"
-            :to="item.link"
-            color="secondary"
-            depressed
-          >
-            <span class="primary--text">{{ item.title }}</span>
-            <v-icon right class="primary--text">{{ item.icon }}</v-icon>
-          </v-btn>
+      <v-toolbar-items>
+        <v-btn color="secondary" depressed @click="switchLocale">
+          <v-img
+            :src="flags[otherLocale]"
+            max-height="16px"
+            max-width="16px"
+          ></v-img>
+          <span class="primary--text px-2">{{ locales[otherLocale] }}</span>
+        </v-btn>
+        <template v-if="!isAdmin && $vuetify.breakpoint.smAndUp">
+          <template v-if="isLoggedIn">
+            <v-btn
+              v-for="item in afterRegisterNavbarTabs"
+              :key="item.title"
+              @click="item.action"
+              color="secondary"
+              depressed
+            >
+              <span class="primary--text">{{ itemTitle(item) }}</span>
+              <v-icon right class="primary--text">{{ item.icon }}</v-icon>
+            </v-btn>
+          </template>
+          <template v-else>
+            <v-btn
+              v-for="item in beforeRegisterNavbarTabs"
+              :key="item.title"
+              :to="item.link"
+              color="secondary"
+              depressed
+            >
+              <span class="primary--text">{{ itemTitle(item) }}</span>
+              <v-icon right class="primary--text">{{ item.icon }}</v-icon>
+            </v-btn>
+          </template>
         </template>
       </v-toolbar-items>
+
       <v-app-bar-nav-icon
         class="primary--text"
         @click="drawer = true"
@@ -111,13 +136,20 @@
 
 <script>
 export default {
-  data: () => ({
-    navbarColor: "rgb(0,0,0,1)",
+  data() {
+    return {
+      navbarColor: "rgb(0,0,0,1)",
 
-    drawer: false
-  }),
-  mounted() {
-    this.handleScroll();
+      drawer: false,
+      flags: {
+        en: require("@/assets/united-kingdom.png"),
+        ar: require("@/assets/egypt.png")
+      },
+      locales: {
+        en: "English",
+        ar: "العربية"
+      }
+    };
   },
   computed: {
     isAdmin() {
@@ -128,15 +160,39 @@ export default {
     },
     beforeRegisterNavbarTabs() {
       return [
-        { icon: "mdi-login", title: "Login", link: "/login" },
-        { icon: "mdi-account-plus", title: "Signup", link: "/signup" }
+        {
+          icon: "mdi-login",
+          title: "Login",
+          title_ar: "تسجيل الدخول",
+          link: "/login"
+        },
+        {
+          icon: "mdi-account-plus",
+          title: "Signup",
+          title_ar: "إنشاء حساب جديد",
+          link: "/signup"
+        }
       ];
     },
     afterRegisterNavbarTabs() {
       return [
-        { icon: "mdi-account", title: "Profile", action: this.toProfile },
-        { icon: "mdi-account-arrow-left", title: "Logout", action: this.logout }
+        {
+          icon: "mdi-account",
+          title: "Profile",
+          title_ar: "حسابي",
+          action: this.toProfile
+        },
+        {
+          icon: "mdi-account-arrow-left",
+          title: "Logout",
+          title_ar: "تسجيل الخروج",
+          action: this.logout
+        }
       ];
+    },
+    otherLocale() {
+      if (this.$root.$i18n.locale === "en") return "ar";
+      else return "en";
     }
   },
   methods: {
@@ -157,7 +213,20 @@ export default {
     },
     toProfile: function() {
       this.$router.push(`/my-profile`).catch(() => {});
+    },
+    switchLocale() {
+      if (this.$root.$i18n.locale === "en") this.$root.$i18n.locale = "ar";
+      else this.$root.$i18n.locale = "en";
+    },
+    itemTitle(item) {
+      if (this.$root.$i18n.locale === "en") return item.title;
+      else return item.title_ar;
     }
+  },
+  mounted() {
+    this.handleScroll();
+    //Set default language
+    this.$root.$i18n.locale = "en";
   }
 };
 </script>

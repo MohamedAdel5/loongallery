@@ -3,7 +3,7 @@
     <v-card tile flat class="main mb-16">
       <v-card-title
         class="examples-card-title d-block text-center secondary--text"
-        >Drawing Styles Examples</v-card-title
+        >{{ $t("drawing_styles_examples") }}</v-card-title
       >
       <v-container>
         <template v-for="(style, i) in drawingStylesExamples">
@@ -31,9 +31,9 @@
         </template>
         <v-row>
           <v-col cols="12" class="d-flex justify-end pt-16 pb-0">
-            <v-btn @click="goBack" max-width="200px" color="secondary"
-              >Go Back</v-btn
-            >
+            <v-btn @click="goBack" max-width="200px" color="secondary">{{
+              $t("back")
+            }}</v-btn>
           </v-col>
         </v-row>
       </v-container>

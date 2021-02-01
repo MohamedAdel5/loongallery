@@ -13,9 +13,9 @@
       </v-row>
       <v-row class="d-flex justify-center">
         <v-card-actions>
-          <router-link to="/" class="mt-10 secondary--text"
-            >Back to home</router-link
-          >
+          <router-link to="/" class="mt-10 secondary--text">{{
+            $t("back_to_home")
+          }}</router-link>
         </v-card-actions>
       </v-row>
     </v-card>

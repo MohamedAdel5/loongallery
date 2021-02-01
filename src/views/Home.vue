@@ -17,7 +17,7 @@
             :key="item.component"
             class="secondary--text"
           >
-            {{ item.title }}
+            {{ itemTitle(item) }}
           </v-tab>
         </v-tabs>
         <component v-bind:is="tabs[tabIndex].component"></component>
@@ -51,8 +51,8 @@
           </template>
         </v-btn>
       </template>
-      <span v-if="productIsAdded">A Product Is Added To Your Cart.</span>
-      <span v-else>View Your Shopping Cart</span>
+      <span v-if="productIsAdded">{{ $t("product_added_to_cart") }}</span>
+      <span v-else>{{ $t("view_shopping_cart") }}</span>
     </v-tooltip>
   </div>
 </template>
@@ -60,14 +60,14 @@
 <script>
 import Banner from "../components/Banner";
 import OurProducts from "../components/OurProducts";
-import CustomizedPortraits from "../components/CustomizedPortraits";
+import CustomOrder from "../components/CustomOrder";
 
 export default {
   name: "home",
   components: {
     Banner,
     OurProducts,
-    CustomizedPortraits
+    CustomOrder
   },
   data() {
     return {
@@ -75,8 +75,16 @@ export default {
       showCartTooltip: false,
       productIsAdded: false,
       tabs: [
-        { title: "Our Products", component: "our-products" },
-        { title: "Customized Portraits", component: "customized-portraits" }
+        {
+          title: "Our Products",
+          title_ar: "منتجاتنا",
+          component: "our-products"
+        },
+        {
+          title: "Custom Order",
+          title_ar: "طلب خاص",
+          component: "custom-order"
+        }
       ]
     };
   },
@@ -92,6 +100,10 @@ export default {
         this.showCartTooltip = false;
         this.productIsAdded = false;
       }, 3000);
+    },
+    itemTitle(item) {
+      if (this.$root.$i18n.locale === "en") return item.title;
+      else return item.title_ar;
     }
   },
   watch: {

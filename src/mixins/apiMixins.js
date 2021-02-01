@@ -234,7 +234,7 @@ module.exports.setMetroStationsMixin = {
     setMetroStations: async function() {
       try {
         let res = await this.$http.get(`/global-variables/metroStations`);
-        if (res.status === 200) return res.data.metroStations;
+        if (res.status === 200) return res.data;
         else throw new Error("fail");
       } catch (err) {
         this.$router.push(`/error`).catch(() => {});
@@ -243,27 +243,27 @@ module.exports.setMetroStationsMixin = {
   }
 };
 
-module.exports.setOurLocationsMixin = {
-  methods: {
-    setOurLocations: async function() {
-      try {
-        let ourLocationsShort, ourLocationsLong;
-        let res = await this.$http.get(`/global-variables/ourLocations`);
-        if (res.status === 200) {
-          ourLocationsShort = res.data.ourLocations.map(
-            location => location.short
-          );
-          ourLocationsLong = res.data.ourLocations.map(
-            location => location.long
-          );
-          return { ourLocationsShort, ourLocationsLong };
-        } else throw new Error("fail");
-      } catch (err) {
-        this.$router.push(`/error`).catch(() => {});
-      }
-    }
-  }
-};
+// module.exports.setOurLocationsMixin = {
+//   methods: {
+//     setOurLocations: async function() {
+//       try {
+//         let ourLocationsShort, ourLocationsLong;
+//         let res = await this.$http.get(`/global-variables/ourLocations`);
+//         if (res.status === 200) {
+//           ourLocationsShort = res.data.ourLocations.map(
+//             location => location.short
+//           );
+//           ourLocationsLong = res.data.ourLocations.map(
+//             location => location.long
+//           );
+//           return { ourLocationsShort, ourLocationsLong };
+//         } else throw new Error("fail");
+//       } catch (err) {
+//         this.$router.push(`/error`).catch(() => {});
+//       }
+//     }
+//   }
+// };
 
 module.exports.setOneProductMixin = {
   methods: {

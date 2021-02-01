@@ -15,9 +15,11 @@
 export default {
   name: "Banner",
 
-  data: () => ({
-    //
-  })
+  data() {
+    return {
+      //
+    };
+  }
 };
 </script>
 <style scoped>

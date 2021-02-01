@@ -1,11 +1,11 @@
 <template>
   <v-card flat class="main" v-if="dataFetched">
-    <h2 class="text-center py-10 secondary--text">Our Products</h2>
+    <h2 class="text-center py-10 secondary--text">{{ $t("our_products") }}</h2>
     <v-container class="d-flex flex-column align-content-space-around">
       <v-row class="d-flex flex-row">
         <v-col cols="3" sm="6" class="pl-4 d-flex flex-grow-0 flex-shrink-1">
           <v-btn class="success" small @click="showAddNewProductWindow = true">
-            Add New Product
+            {{ $t("add_new_product") }}
             <v-icon>mdi-plus</v-icon>
           </v-btn>
         </v-col>
@@ -24,7 +24,7 @@
           @click="getProducts(item.category, 1)"
           class="secondary--text main"
         >
-          {{ item.title }}
+          {{ itemTitle(item) }}
         </v-tab>
       </v-tabs>
       <!-- <v-row>
@@ -91,7 +91,7 @@
                   "
                   class="red--text"
                 >
-                  Remove
+                  {{ $t("remove") }}
                   <v-icon>mdi-delete</v-icon>
                 </v-btn>
               </v-col>
@@ -105,7 +105,7 @@
                   "
                   class="secondary--text"
                 >
-                  Edit
+                  {{ $t("edit") }}
                   <v-icon>mdi-pencil</v-icon>
                 </v-btn>
               </v-col>
@@ -114,7 +114,7 @@
           <product-card
             :prices="generalProductPrices"
             :title="
-              `${tabs[tabIndex].title}-${
+              `${itemTitle(tabs[tabIndex])}-${
                 products[(i - 1) * elementsPerRow + (j - 1)].skuCode
               }`
             "
@@ -145,7 +145,7 @@
                   "
                   class="red--text"
                 >
-                  Remove
+                  {{ $t("remove") }}
                   <v-icon>mdi-delete</v-icon>
                 </v-btn>
               </v-col>
@@ -163,7 +163,7 @@
                   "
                   class="secondary--text"
                 >
-                  Edit
+                  {{ $t("edit") }}
                   <v-icon>mdi-pencil</v-icon>
                 </v-btn>
               </v-col>
@@ -172,7 +172,7 @@
           <product-card
             :prices="generalProductPrices"
             :title="
-              `${tabs[tabIndex].title}-${
+              `${itemTitle(tabs[tabIndex])}-${
                 products[
                   Math.floor(productsCount / elementsPerRow) * elementsPerRow +
                     (j - 1)
@@ -245,27 +245,27 @@
           <v-icon>mdi-close</v-icon>
         </v-btn>
         <template v-if="deletedSuccessfully === 'none'">
-          <p>Are you sure you want to delete this product?</p>
+          <p>{{ $t("delete_consent") }}</p>
           <v-row>
             <v-col cols="4">
               <v-btn color="error" @click="showDeleteAssertionWindow = false">
-                No
+                {{ $t("no") }}
               </v-btn>
             </v-col>
             <v-col cols="4"></v-col>
             <v-col cols="4">
               <v-btn color="success" @click="deleteProductSubmit">
-                Yes
+                {{ $t("yes") }}
               </v-btn>
             </v-col>
           </v-row>
         </template>
-        <v-alert type="error" v-if="deletedSuccessfully === 'fail'"
-          >Error. product cannot be deleted. Please try again.</v-alert
-        >
-        <v-alert type="success" v-if="deletedSuccessfully === 'success'"
-          >Deleted successfully.</v-alert
-        >
+        <v-alert type="error" v-if="deletedSuccessfully === 'fail'">{{
+          $t("delete_fail")
+        }}</v-alert>
+        <v-alert type="success" v-if="deletedSuccessfully === 'success'">{{
+          $t("delete_success")
+        }}</v-alert>
       </div>
     </v-overlay>
   </v-card>
@@ -287,11 +287,13 @@ export default {
     AdminEditProduct
   },
   watch: {},
-  data: () => ({
-    productToEdit: null,
-    productToDeleteID: null,
-    deletedSuccessfully: "none"
-  }),
+  data() {
+    return {
+      productToEdit: null,
+      productToDeleteID: null,
+      deletedSuccessfully: "none"
+    };
+  },
   computed: {},
   methods: {
     deleteProductSubmit: async function() {
@@ -330,6 +332,10 @@ export default {
     },
     closeEditProductWindow: function() {
       this.showEditProductWindow = false;
+    },
+    itemTitle(item) {
+      if (this.$root.$i18n.locale === "en") return item.title;
+      else return item.title_ar;
     }
   }
 };

@@ -7,7 +7,7 @@
     <banner />
     <v-container :class="$vuetify.breakpoint.xsOnly ? 'pa-0 pb-16' : 'pb-16'">
       <h1 class="text-center secondary--text my-10 font-weight-regular">
-        Admin Dashboard
+        {{ $t("admin_dashboard") }}
       </h1>
       <v-navigation-drawer
         dark
@@ -27,9 +27,9 @@
           </v-list-item-icon>
 
           <v-list-item-content>
-            <v-list-item-title class="white--text"
-              >Admin Dashboard</v-list-item-title
-            >
+            <v-list-item-title class="white--text">{{
+              $t("admin_dashboard")
+            }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
 
@@ -48,7 +48,7 @@
 
             <v-list-item-content>
               <v-list-item-title class="white--text">{{
-                item.title
+                itemTitle(item)
               }}</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
@@ -92,12 +92,14 @@ export default {
       navbarTabs: [
         {
           icon: "mdi-phone-message",
-          title: "Current Orders",
+          title: "Orders",
+          title_ar: "الطلبات",
           component: "admin-orders"
         },
         {
           icon: "mdi-image",
           title: "Our Products",
+          title_ar: "منتجاتنا",
           component: "admin-products"
         },
         // {
@@ -108,21 +110,25 @@ export default {
         {
           icon: "mdi-currency-usd",
           title: "Edit Prices",
+          title_ar: "تعديل الأسعار",
           component: "admin-edit-prices"
         },
         {
           icon: "mdi-television-guide",
           title: "Edit Announcements",
+          title_ar: "تعديل الاعلانات",
           component: "admin-edit-announcements"
         },
         {
           icon: "mdi-email",
           title: "Send Emails",
+          title_ar: "ارسال بريد الكتروني",
           component: "admin-send-emails"
         },
         {
           icon: "mdi-content-save",
           title: "Database backup",
+          title_ar: "حفظ قاعدة البيانات",
           component: "admin-database-backup"
         }
       ],
@@ -138,7 +144,12 @@ export default {
       }
     }
   },
-  methods: {},
+  methods: {
+    itemTitle(item) {
+      if (this.$root.$i18n.locale === "en") return item.title;
+      else return item.title_ar;
+    }
+  },
   mounted: async function() {
     const adminAuthJwt = sessionStorage.getItem("admin_auth_jwt");
     const tokenValidationResult = this.validateAdminToken(adminAuthJwt);

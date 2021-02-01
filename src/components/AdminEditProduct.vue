@@ -1,13 +1,15 @@
 <template>
   <v-card class="main" light>
-    <h2 class="text-center pt-10 secondary--text">Edit Product</h2>
-    <p class="text-center secondary--text">SKU code: {{ skuCodeProp }}</p>
+    <h2 class="text-center pt-10 secondary--text">{{ $t("edit_product") }}</h2>
+    <p class="text-center secondary--text">
+      {{ $t("sku_code") }}: {{ skuCodeProp }}
+    </p>
     <p class="text-center pb-8 secondary--text">_id: {{ productID }}</p>
 
     <v-container class="d-flex flex-column align-content-space-around pa-10">
       <v-row>
         <v-col cols="12">
-          <v-form v-model="valid" ref="form">
+          <v-form v-model="valid" ref="form" :key="$root.$i18n.locale">
             <v-row>
               <p class="font-weight-light secondary--text">
                 Edit Fields
@@ -18,7 +20,7 @@
               <v-col cols="6">
                 <v-label
                   ><span class="black--text caption"
-                    >Product Image (300x300)pixels</span
+                    >{{ $t("product_image") }}-(300x300)px</span
                   ></v-label
                 >
               </v-col>
@@ -34,9 +36,9 @@
             <v-row class="py-2">
               <v-col cols="6" class="d-flex justify-left align-center pa-0">
                 <v-label
-                  ><span class="black--text caption"
-                    >Product SKU Code</span
-                  ></v-label
+                  ><span class="black--text caption">{{
+                    $t("sku_code")
+                  }}</span></v-label
                 >
               </v-col>
               <v-col
@@ -49,9 +51,9 @@
             <v-row class="py-2">
               <v-col cols="6" class="d-flex justify-left align-center pa-0">
                 <v-label
-                  ><span class="black--text text caption"
-                    >Choose Category</span
-                  ></v-label
+                  ><span class="black--text text caption">{{
+                    $t("product_category")
+                  }}</span></v-label
                 >
               </v-col>
               <v-col
@@ -72,20 +74,23 @@
 
             <v-row class="mt-10">
               <v-col cols="12" class="pa-0" sm="6">
-                <v-btn @click="applyChanges" max-width="200px" color="success"
-                  >Apply Changes</v-btn
+                <v-btn
+                  @click="applyChanges"
+                  max-width="200px"
+                  color="success"
+                  >{{ $t("submit") }}</v-btn
                 >
               </v-col>
             </v-row>
           </v-form>
         </v-col>
       </v-row>
-      <v-alert type="success" v-if="responseResult === 'success'"
-        >Updated successfully</v-alert
-      >
+      <v-alert type="success" v-if="responseResult === 'success'">{{
+        $t("edit_success")
+      }}</v-alert>
       <v-alert type="error" v-if="responseResult === 'fail'"
-        >Failed to update the product. Please check that the SKU code is unique
-        (Not the same as another product) and try again.</v-alert
+        >{{ $t("edit_err") }} <br />
+        {{ $t("edit_err_note") }}</v-alert
       >
     </v-container>
   </v-card>
@@ -100,19 +105,32 @@ export default {
   props: ["productID", "skuCodeProp"],
   computed: {
     categories() {
-      return this.$store.getters.categories;
+      if (this.$root.$i18n.locale === "en")
+        return this.$store.getters.categories;
+      else {
+        const items = [];
+        const nonCustomGeneralProducts = this.$store.getters
+          .nonCustomGeneralProducts;
+        for (let product of Object.keys(nonCustomGeneralProducts)) {
+          items.push({
+            text: nonCustomGeneralProducts[product].productName_Ar,
+            value: product
+          });
+        }
+        return items;
+      }
     }
   },
-  data: () => ({
-    valid: false,
-    responseResult: "none",
-    uploadedImage: null,
-    productCategory: "",
-    skuCode: "",
-    skuCodeRules: [
-      v => (v && v.length <= 20) || "SKU code must not exceed 20 characters."
-    ]
-  }),
+  data() {
+    return {
+      valid: false,
+      responseResult: "none",
+      uploadedImage: null,
+      productCategory: "",
+      skuCode: "",
+      skuCodeRules: [v => (v && v.length <= 20) || this.$t("sku_code_err1")]
+    };
+  },
   methods: {
     selectFile(file) {
       this.uploadedImage = file;

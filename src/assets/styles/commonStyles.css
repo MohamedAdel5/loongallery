@@ -9,3 +9,7 @@
   border: 1px solid grey;
   border-radius: 5px;
 }
+.ltr_dir {
+  direction: ltr !important;
+  text-align: right;
+}

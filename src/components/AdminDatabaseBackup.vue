@@ -1,27 +1,27 @@
 <template>
   <v-card class="main" light v-if="dataFetched">
-    <h2 class="text-center py-10 secondary--text">Database backup</h2>
+    <h2 class="text-center py-10 secondary--text">
+      {{ $t("database_backup") }}
+    </h2>
     <v-container>
       <v-row>
         <v-col cols="12" class="d-flex justify-center">
           <p>
-            Please contact the developers team as soon as possible if you had
-            any problems doing the backup.
+            {{ $t("backup_note") }}
           </p>
         </v-col>
       </v-row>
       <v-row>
         <v-col cols="12" class="d-flex justify-center">
-          <v-btn @click="getBackup" class="secondary">Backup now</v-btn>
+          <v-btn @click="getBackup" class="secondary">{{ $t("backup") }}</v-btn>
         </v-col>
         <v-col cols="12">
-          <v-alert v-if="responseResult === 'success'" type="success"
-            >Downloaded successfully</v-alert
-          >
-          <v-alert v-if="responseResult === 'fail'" type="error"
-            >Could Not backup. Please contact the developers team as soon as
-            possible.</v-alert
-          >
+          <v-alert v-if="responseResult === 'success'" type="success">{{
+            $t("save_success")
+          }}</v-alert>
+          <v-alert v-if="responseResult === 'fail'" type="error">{{
+            $t("save_fail")
+          }}</v-alert>
         </v-col>
       </v-row>
     </v-container>
@@ -33,10 +33,12 @@ import { backupMixin } from "@/mixins/apiMixins";
 export default {
   name: "admin-database-backup",
   mixins: [backupMixin],
-  data: () => ({
-    dataFetched: false,
-    responseResult: "none"
-  }),
+  data() {
+    return {
+      dataFetched: false,
+      responseResult: "none"
+    };
+  },
   methods: {
     forceFileDownload(response) {
       const fileName = response.headers["content-disposition"].match(

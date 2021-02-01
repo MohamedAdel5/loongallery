@@ -85,7 +85,15 @@ export default {
       else return false;
     },
     orderShippingMethod: function(order) {
-      return this.$store.getters.shippingFees[order.shippingMethod].name_en;
+      if (this.$root.$i18n.locale === "en")
+        return this.$store.getters.shippingFees[order.shippingMethod].name_en;
+      else
+        return this.$store.getters.shippingFees[order.shippingMethod].name_ar;
+    },
+    getProductCategoryName: function(product) {
+      if (this.$root.$i18n.locale === "en")
+        return product.generalProduct.productName;
+      else return product.generalProduct.productName_Ar;
     },
     disableAllLists: function() {
       for (let i = 0; i < this.ordersListsEnable.length; i++) {

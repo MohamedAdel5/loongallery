@@ -9,7 +9,7 @@
               <tbody>
                 <tr>
                   <td>
-                    Total orders
+                    {{ $t("total_orders") }}
                   </td>
                   <td>
                     {{ totalCount }}
@@ -17,7 +17,7 @@
                 </tr>
                 <tr>
                   <td>
-                    Total unseen orders
+                    {{ $t("total_unseen") }}
                   </td>
                   <td>
                     {{ unseenCount }}
@@ -25,7 +25,7 @@
                 </tr>
                 <tr>
                   <td>
-                    Total seen orders:
+                    {{ $t("total_seen") }}
                   </td>
                   <td>
                     {{ totalCount - unseenCount }}
@@ -33,7 +33,7 @@
                 </tr>
                 <tr>
                   <td>
-                    Total undelivered orders:
+                    {{ $t("total_undelivered") }}
                   </td>
                   <td>
                     {{ undeliveredCount }}
@@ -41,7 +41,7 @@
                 </tr>
                 <tr>
                   <td>
-                    Total delivered orders:
+                    {{ $t("total_delivered") }}
                   </td>
                   <td>
                     {{ totalCount - undeliveredCount }}
@@ -84,20 +84,24 @@
               v-text="`Order: ${order.code}`"
             ></v-list-item-title>
             <div class="text-right">
-              <v-chip v-if="order.delivered" small color="success" width="100"
-                >Delivered</v-chip
+              <v-chip
+                v-if="order.delivered"
+                small
+                color="success"
+                width="100"
+                >{{ $t("delivered") }}</v-chip
               >
               <v-chip
                 v-if="hasACustomOrder(order)"
                 small
                 color="yellow"
                 width="100"
-                >Has Custom Order(s)</v-chip
+                >{{ $t("has_custom_order") }}</v-chip
               >
 
-              <v-chip v-if="order.seen" small color="blue" width="100"
-                >Seen</v-chip
-              >
+              <v-chip v-if="order.seen" small color="blue" width="100">{{
+                $t("seen")
+              }}</v-chip>
               <v-btn
                 class="black red--text"
                 @click="
@@ -106,7 +110,7 @@
                 "
                 small
               >
-                Delete Order
+                {{ $t("remove") }}
                 <v-icon>mdi-delete</v-icon>
               </v-btn>
             </div>
@@ -118,37 +122,37 @@
               <template v-slot:default>
                 <tbody>
                   <tr>
-                    <td>Order code</td>
+                    <td>{{ $t("order_code") }}</td>
                     <td>
                       {{ order.code }}
                     </td>
                   </tr>
                   <tr>
-                    <td>Date</td>
+                    <td>{{ $t("date") }}</td>
                     <td>
                       {{ new Date(order.date).toString() }}
                     </td>
                   </tr>
                   <tr>
-                    <td>Name</td>
+                    <td>{{ $t("name") }}</td>
                     <td>
                       {{ order.customerName }}
                     </td>
                   </tr>
                   <tr>
-                    <td>Shipping Method</td>
+                    <td>{{ $t("shipping_method") }}</td>
                     <td>
                       {{ orderShippingMethod(order) }}
                     </td>
                   </tr>
                   <tr>
-                    <td>Address</td>
+                    <td>{{ $t("address") }}</td>
                     <td>
                       {{ order.customerAddress }}
                     </td>
                   </tr>
                   <tr>
-                    <td>Phone Numbers</td>
+                    <td>{{ $t("phone_number") }}</td>
                     <td>
                       <tr
                         v-for="phone in order.customerPhoneNumbers"
@@ -161,7 +165,7 @@
                     </td>
                   </tr>
                   <tr>
-                    <td>Products</td>
+                    <td>{{ $t("products") }}</td>
                     <td>
                       <tr
                         v-for="(product, j) in order.products"
@@ -178,15 +182,11 @@
                             </tr>
                             <template v-if="!isCustomProduct(product)">
                               <tr>
-                                <td>Product SKU code</td>
+                                <td>{{ $t("sky_code") }}</td>
                                 <td>{{ product.skuCode }}</td>
                               </tr>
                               <tr>
-                                <td>Product ID</td>
-                                <td>{{ product.productID }}</td>
-                              </tr>
-                              <tr>
-                                <td>Product Image</td>
+                                <td>{{ $t("product_image") }}</td>
                                 <td>
                                   <a :href="product.image" target="_blank">
                                     <v-img
@@ -199,36 +199,32 @@
                                 </td>
                               </tr>
                               <tr>
-                                <td>Size</td>
-                                <td>{{ product.size }}</td>
+                                <td>{{ $t("size") }}</td>
+                                <td class="ltr_dir">{{ product.size }}</td>
                               </tr>
                               <tr>
-                                <td>Number of people/faces</td>
-                                <td>{{ product.numberOfFaces }}</td>
-                              </tr>
-                              <tr>
-                                <td>Quantity</td>
+                                <td>{{ $t("quantity") }}</td>
                                 <td>{{ product.quantity }}</td>
                               </tr>
 
                               <tr>
-                                <td>Product Category</td>
+                                <td>{{ $t("product_category") }}</td>
 
                                 <td>
-                                  {{ product.generalProduct.productName }}
+                                  {{ getProductCategoryName(product) }}
                                 </td>
                               </tr>
                               <tr>
-                                <td>Price</td>
+                                <td>{{ $t("price") }}</td>
                                 <td>{{ product.price }}</td>
                               </tr>
                             </template>
                             <template v-else>
-                              <v-chip small color="yellow" width="100"
-                                >Custom Order</v-chip
-                              >
+                              <v-chip small color="yellow" width="100">{{
+                                $t("custom_order")
+                              }}</v-chip>
                               <tr>
-                                <td>Product Image</td>
+                                <td>{{ $t("product_image") }}</td>
                                 <td>
                                   <a :href="product.image" target="_blank">
                                     <v-img
@@ -241,26 +237,25 @@
                                 </td>
                               </tr>
                               <tr>
-                                <td>Size</td>
-                                <td>{{ product.size }}</td>
+                                <td>{{ $t("size") }}</td>
+                                <td class="ltr_dir">{{ product.size }}</td>
                               </tr>
                               <tr>
-                                <td>Number of people/faces</td>
+                                <td>{{ $t("number_of_faces") }}</td>
                                 <td>{{ product.numberOfFaces }}</td>
                               </tr>
                               <tr>
-                                <td>Quantity</td>
+                                <td>{{ $t("quantity") }}</td>
                                 <td>{{ product.quantity }}</td>
                               </tr>
-
                               <tr>
-                                <td>Product Category</td>
+                                <td>{{ $t("product_category") }}</td>
                                 <td>
-                                  {{ product.generalProduct.productName }}
+                                  {{ getProductCategoryName(product) }}
                                 </td>
                               </tr>
                               <tr>
-                                <td>Price</td>
+                                <td>{{ $t("price") }}</td>
                                 <td>{{ product.price }}</td>
                               </tr>
                             </template>
@@ -270,23 +265,22 @@
                     </td>
                   </tr>
                   <tr>
-                    <td>User</td>
+                    <td>{{ $t("user") }}</td>
                     <td>
                       <span v-if="order.userID">
-                        User is registered in our system with ID:
-                        {{ order.userID }}</span
+                        {{ $t("user_id_note1") }}: {{ order.userID }}</span
                       >
-                      <span v-else> User is not registered in our system</span>
+                      <span v-else> {{ $t("user_id_note2") }}</span>
                     </td>
                   </tr>
                   <tr>
-                    <td>Shipping Fees</td>
+                    <td>{{ $t("shipping_fees") }}</td>
                     <td>
                       {{ order.shippingFees }}
                     </td>
                   </tr>
                   <tr>
-                    <td>Total price</td>
+                    <td>{{ $t("total_price") }}</td>
                     <td>
                       {{ totalPrice(i) }}
                     </td>
@@ -299,7 +293,7 @@
               small
               @click="handleDelivered(order)"
               v-if="!order.delivered"
-              >Mark As delivered</v-btn
+              >{{ $t("mark_as_delivered") }}</v-btn
             >
           </v-list-item-content>
         </v-list-item>
@@ -316,27 +310,27 @@
           <v-icon>mdi-close</v-icon>
         </v-btn>
         <template v-if="deletedSuccessfully === 'none'">
-          <p>Are you sure you want to delete this order?</p>
+          <p>{{ $t("delete_consent") }}</p>
           <v-row>
             <v-col cols="4">
               <v-btn color="error" @click="showDeleteAssertionWindow = false">
-                No
+                {{ $t("no") }}
               </v-btn>
             </v-col>
             <v-col cols="4"></v-col>
             <v-col cols="4">
               <v-btn color="success" @click="deleteOrderSubmit()">
-                Yes
+                {{ $t("yes") }}
               </v-btn>
             </v-col>
           </v-row>
         </template>
-        <v-alert type="error" v-if="deletedSuccessfully === 'fail'"
-          >Error. order cannot be deleted. Please try again.</v-alert
-        >
-        <v-alert type="success" v-if="deletedSuccessfully === 'success'"
-          >Deleted successfully.</v-alert
-        >
+        <v-alert type="error" v-if="deletedSuccessfully === 'fail'">{{
+          $t("delete_fail")
+        }}</v-alert>
+        <v-alert type="success" v-if="deletedSuccessfully === 'success'">{{
+          $t("delete_success")
+        }}</v-alert>
       </div>
     </v-overlay>
     <v-overlay z-index="11" opacity="0.8" v-if="showSeenError" :value="true">
@@ -344,9 +338,7 @@
         <v-btn icon @click="closeSeenErrorWindow">
           <v-icon>mdi-close</v-icon>
         </v-btn>
-        <v-alert type="error"
-          >Error. Could not set seen status. Please try again.</v-alert
-        >
+        <v-alert type="error">{{ $t("seen_err") }}</v-alert>
       </div>
     </v-overlay>
     <v-overlay
@@ -359,9 +351,7 @@
         <v-btn icon @click="closeDeliveredErrorWindow">
           <v-icon>mdi-close</v-icon>
         </v-btn>
-        <v-alert type="error"
-          >Error. Could not set delivered status. Please try again.</v-alert
-        >
+        <v-alert type="error">{{ $t("delivered_err") }}</v-alert>
       </div>
     </v-overlay>
   </v-card>

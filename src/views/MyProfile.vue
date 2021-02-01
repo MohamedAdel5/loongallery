@@ -7,7 +7,7 @@
     <banner />
     <v-container :class="$vuetify.breakpoint.xsOnly ? 'pa-0 pb-16' : 'pb-16'">
       <h1 class="text-center secondary--text my-10 font-weight-regular">
-        My Profile
+        {{ $t("my_profile") }}
       </h1>
       <v-navigation-drawer
         dark
@@ -27,9 +27,9 @@
           </v-list-item-icon>
 
           <v-list-item-content>
-            <v-list-item-title class="white--text"
-              >My Profile</v-list-item-title
-            >
+            <v-list-item-title class="white--text">{{
+              $t("my_profile")
+            }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
 
@@ -48,7 +48,7 @@
 
             <v-list-item-content>
               <v-list-item-title class="white--text">{{
-                item.title
+                itemTitle(item)
               }}</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
@@ -84,18 +84,27 @@ export default {
         {
           icon: "mdi-phone-message",
           title: "My Orders",
+          title_ar: "طلباتي",
+
           component: "user-orders"
         },
         {
           icon: "mdi-account-edit",
           title: "Edit Profile",
+          title_ar: "تعديل الحساب",
+
           component: "user-edit-profile"
         }
       ],
       currentComponent: "user-orders"
     };
   },
-  methods: {},
+  methods: {
+    itemTitle(item) {
+      if (this.$root.$i18n.locale === "en") return item.title;
+      else return item.title_ar;
+    }
+  },
   mounted: async function() {
     if (!this.$store.getters.authJwt)
       this.$router.push("/login").catch(() => {});

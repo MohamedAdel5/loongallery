@@ -1,7 +1,7 @@
 <template>
   <v-card class="main mb-16" v-if="dataFetched">
     <h2 class="text-center py-10 secondary--text">
-      Customize Your Own Portrait
+      {{ $t("make_a_custom_order") }}
     </h2>
     <v-container class="d-flex flex-column align-content-space-around pa-10">
       <v-form v-model="valid" ref="form">
@@ -9,38 +9,36 @@
           <v-col cols="10">
             <v-row
               style="border: solid 1px grey; border-radius: 5px; color: rgba(50, 46, 46, 0.87)"
+              class="my-2"
             >
               <v-col cols="12">
                 <v-container>
-                  <p>
-                    - Please follow the following rules before uploading your
-                    image:<br />
-                  </p>
-                  <ol>
+                  <h5>{{ $t("custom_order_notes_main") }}</h5>
+                  <ol class="caption">
                     <li>
-                      Upload a good quality image that shows all important
-                      features.
+                      {{ $t("custom_order_notes_l1") }}
                     </li>
-                    <li>The image format has to be jpg/jpeg or png</li>
                     <li>
-                      In case of choosing wood carving, upload an image that
-                      contains the text you would like to have on the
-                      product(Name/Date/Quote).
+                      {{ $t("custom_order_notes_l2") }}
+                    </li>
+                    <li>
+                      {{ $t("custom_order_notes_l3") }}
                     </li>
                   </ol>
                 </v-container>
                 <v-divider></v-divider>
                 <v-container>
-                  <p>
-                    - Please read the section underneath this page to find
-                    details about our products materials and our delivery times.
-                  </p>
+                  <h5>
+                    <a href="#productsDetails" class="brown--text">{{
+                      $t("products_details")
+                    }}</a>
+                  </h5>
                 </v-container>
               </v-col>
             </v-row>
-            <v-row>
-              <p class="font-weight-light secondary--text">
-                Upload An Image And Make A Special Order
+            <v-row class="ma-0">
+              <p class="font-weight-light secondary--text ma-0">
+                {{ $t("upload_image") }}
               </p>
             </v-row>
             <v-row>
@@ -48,7 +46,7 @@
                 :disabled="!addToCartButton"
                 dense
                 accept="image/*"
-                label="Select From Device..."
+                :label="$t('select_image')"
                 @change="selectFile"
               ></v-file-input>
             </v-row>
@@ -59,18 +57,18 @@
                 min="0"
                 :rules="numberOfFacesRules"
                 type="number"
-                label="How many people are in the image?"
+                :label="$t('number_of_faces_note')"
                 persistent-hint
-                hint="If the image does not contain people, write 0"
+                :hint="$t('number_of_faces_hint')"
                 dense
               ></v-text-field>
             </v-row>
             <v-row>
               <v-col cols="6" class="d-flex justify-left align-center pa-0">
                 <v-label
-                  ><span class="dark--text caption"
-                    >Choose Drawing Style</span
-                  ></v-label
+                  ><span class="dark--text caption">{{
+                    $t("choose_drawing_style")
+                  }}</span></v-label
                 >
               </v-col>
               <v-col
@@ -82,21 +80,22 @@
                   v-model="drawingStyle"
                   :items="customDrawingStyles"
                   standard
-                  label="style"
                 ></v-select>
               </v-col>
             </v-row>
             <v-row>
-              <router-link class=" blue--text" :to="'/drawing-styles-examples'"
-                >Show Drawing Styles Examples</router-link
+              <router-link
+                class=" blue--text subtitle-2"
+                :to="'/drawing-styles-examples'"
+                >{{ $t("drawing_styles_examples") }}</router-link
               >
             </v-row>
             <v-row>
               <v-col cols="6" class="d-flex justify-left align-center pa-0">
                 <v-label
-                  ><span class="dark--text caption"
-                    >Choose Size (width x height)cm</span
-                  ></v-label
+                  ><span class="dark--text caption">{{
+                    $t("choose_size")
+                  }}</span></v-label
                 >
               </v-col>
               <v-col
@@ -108,13 +107,14 @@
                   v-model="size"
                   :items="portraitSizes"
                   standard
-                  label="size"
                 ></v-select>
               </v-col>
             </v-row>
             <v-row>
-              <router-link class=" blue--text" :to="'/preview-sizes'"
-                >Preview Sizes</router-link
+              <router-link
+                class=" blue--text subtitle-2"
+                :to="'/preview-sizes'"
+                >{{ $t("preview_sizes") }}</router-link
               >
             </v-row>
             <v-row class="pt-6">
@@ -124,7 +124,7 @@
                 min="1"
                 :rules="quantityRules"
                 type="number"
-                label="Quantity"
+                :label="$t('quantity')"
                 dense
               ></v-text-field>
             </v-row>
@@ -134,7 +134,10 @@
                 class="d-flex justify-left align-center pa-0"
                 sm="6"
               >
-                <h4>Price: {{ price }} LE</h4>
+                <h4>
+                  {{ $t("price") }}:<br />
+                  {{ price }} LE
+                </h4>
               </v-col>
               <v-col cols="12" class="pa-0" sm="6">
                 <v-btn
@@ -146,11 +149,11 @@
                   :disabled="!price"
                   max-width="200px"
                   color="success"
-                  >Add to cart <v-icon>mdi-cart</v-icon></v-btn
+                  >{{ $t("add_to_cart") }} <v-icon>mdi-cart</v-icon></v-btn
                 >
-                <span v-if="!addToCartButton" class="secondary--text pr-2"
-                  >Product is added to your cart!</span
-                >
+                <span v-if="!addToCartButton" class="secondary--text pr-2">{{
+                  $t("product_added_to_cart")
+                }}</span>
               </v-col>
             </v-row>
           </v-col>
@@ -162,14 +165,14 @@
               @click="makeAnotherOrder"
               max-width="200px"
               color="secondary"
-              >Make Another Order</v-btn
+              >{{ $t("make_another_order") }}</v-btn
             >
           </v-col>
         </v-row>
       </v-form>
       <v-divider></v-divider>
       <v-row style="border: solid 1px grey; border-radius: 5px" class="mt-10">
-        <v-container>
+        <v-container id="productsDetails">
           <v-row>
             <v-col cols="12">
               <h3>Our products and their delivery times:</h3>
@@ -268,7 +271,7 @@ import {
   setFacePriceMixin
 } from "@/mixins/apiMixins";
 export default {
-  name: "customized-portraits",
+  name: "custom-order",
   mixins: [setCustomGeneralProductsMixin, setFacePriceMixin],
   computed: {
     portraitSizes() {
@@ -280,8 +283,21 @@ export default {
       } else return [];
     },
     customDrawingStyles() {
-      return this.$store.getters.customDrawingStyles;
+      if (this.$root.$i18n.locale === "en")
+        return this.$store.getters.customDrawingStyles;
+      else {
+        const items = [];
+        const customGeneralProducts = this.$store.getters.customGeneralProducts;
+        for (let product of Object.keys(customGeneralProducts)) {
+          items.push({
+            text: customGeneralProducts[product].productName_Ar,
+            value: product
+          });
+        }
+        return items;
+      }
     },
+
     price() {
       if (this.valid && this.size) {
         let facesPrice;
@@ -297,21 +313,23 @@ export default {
       } else return "";
     }
   },
-  data: () => ({
-    uploadedImage: null,
-    drawingStyle: "",
-    size: "",
-    quantity: 1,
-    quantityRules: [v => v >= 1 || "Quantity must be greater than 0"],
-    numberOfFaces: 1,
-    numberOfFacesRules: [
-      v => v === 0 || !!v || "Number of people in the image is required.",
-      v => v >= 1 || "People number must be greater than or equal 1"
-    ],
-    addToCartButton: true,
-    valid: false,
-    dataFetched: false
-  }),
+  data() {
+    return {
+      uploadedImage: null,
+      drawingStyle: "",
+      size: "",
+      quantity: 1,
+      quantityRules: [v => v >= 1 || this.$t("quantity_err")],
+      numberOfFaces: 1,
+      numberOfFacesRules: [
+        v => v === 0 || !!v || this.$t("number_of_faces_err1"),
+        v => v >= 0 || this.$t("number_of_faces_err2")
+      ],
+      addToCartButton: true,
+      valid: false,
+      dataFetched: false
+    };
+  },
   methods: {
     selectFile(file) {
       this.uploadedImage = file;
@@ -367,5 +385,9 @@ h2 {
 }
 .sizeRow {
   max-height: 50px;
+}
+.v-select-list,
+.v-select {
+  direction: ltr !important;
 }
 </style>

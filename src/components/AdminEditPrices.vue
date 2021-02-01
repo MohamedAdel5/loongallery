@@ -1,18 +1,17 @@
 <template>
   <v-card class="main" light v-if="dataFetched">
-    <h2 class="text-center py-10 secondary--text">Edit Products Prices</h2>
+    <h2 class="text-center py-10 secondary--text">{{ $t("edit_prices") }}</h2>
     <v-container class="d-flex flex-column align-content-space-around pa-10">
       <p class="text-center red--text" style="border: solid 2px red">
-        Warning: You have to make sure all the prices are set correctly before
-        you submit!
+        {{ $t("prices_warning") }}
       </p>
-      <v-form v-model="valid" ref="form">
+      <v-form v-model="valid" ref="form" :key="$root.$i18n.locale">
         <v-row>
           <v-col cols="12">
             <v-container>
               <v-row
                 ><h3 class="secondary--text">
-                  Custom Drawing Sizes Prices
+                  {{ $t("custom_products_sizes_prices") }}
                 </h3></v-row
               >
               <v-container
@@ -20,7 +19,9 @@
                 :key="i"
               >
                 <v-row
-                  ><h4 class="secondary--text">{{ style }}</h4></v-row
+                  ><h4 class="secondary--text">
+                    {{ getProductName(customGeneralProducts[style]) }}
+                  </h4></v-row
                 >
                 <v-row
                   v-for="(size, j) in Object.entries(
@@ -48,7 +49,7 @@
                   <v-btn
                     @click="applyGeneralProductChanges(style, 'custom')"
                     color="secondary"
-                    >Submit</v-btn
+                    >{{ $t("submit") }}</v-btn
                   >
                 </v-row>
               </v-container>
@@ -61,7 +62,7 @@
             <v-container>
               <v-row
                 ><h3 class="secondary--text">
-                  Non Custom Drawing Sizes Prices
+                  {{ $t("non_custom_products_sizes_prices") }}
                 </h3></v-row
               >
               <v-container
@@ -69,7 +70,9 @@
                 :key="i"
               >
                 <v-row
-                  ><h4 class="secondary--text">{{ style }}</h4></v-row
+                  ><h4 class="secondary--text">
+                    {{ getProductName(customGeneralProducts[style]) }}
+                  </h4></v-row
                 >
                 <v-row
                   v-for="(size, j) in Object.entries(
@@ -97,7 +100,7 @@
                   <v-btn
                     @click="applyGeneralProductChanges(style, 'nonCustom')"
                     color="secondary"
-                    >Submit</v-btn
+                    >{{ $t("submit") }}</v-btn
                   >
                 </v-row>
               </v-container>
@@ -108,7 +111,11 @@
         <v-row>
           <v-col cols="12">
             <v-container>
-              <v-row><h3 class="secondary--text">Shipping Fees</h3></v-row>
+              <v-row
+                ><h3 class="secondary--text">
+                  {{ $t("shipping_fees") }}
+                </h3></v-row
+              >
               <v-container>
                 <v-row v-for="(shippingMethod, j) in shippingFees" :key="j">
                   <v-col cols="12" sm="8" md="4">
@@ -133,7 +140,7 @@
                       )
                     "
                     color="secondary"
-                    >Submit</v-btn
+                    >{{ $t("submit") }}</v-btn
                   >
                 </v-row>
               </v-container>
@@ -144,11 +151,15 @@
         <v-row>
           <v-col cols="12">
             <v-container>
-              <v-row><h3 class="secondary--text">Face Price</h3></v-row>
+              <v-row
+                ><h3 class="secondary--text">
+                  {{ $t("person_price") }}
+                </h3></v-row
+              >
               <v-container>
                 <v-row>
                   <v-col cols="12" sm="8" md="4">
-                    <v-label>Face price:</v-label>
+                    <v-label>{{ $t("person_price") }}:</v-label>
                     <v-text-field
                       min="0"
                       single-line
@@ -166,7 +177,7 @@
                       applyGlobalVariableChanges('facePrice', modifiedFacePrice)
                     "
                     color="secondary"
-                    >Submit</v-btn
+                    >{{ $t("submit") }}</v-btn
                   >
                 </v-row>
               </v-container>
@@ -185,12 +196,12 @@
         <v-btn icon @click="closeEditedSuccessfullyWindow">
           <v-icon>mdi-close</v-icon>
         </v-btn>
-        <v-alert type="error" v-if="editedSuccessfully === 'fail'"
-          >Error. Could not Edit. Please try again.</v-alert
-        >
-        <v-alert type="success" v-if="editedSuccessfully === 'success'"
-          >Edited successfully.</v-alert
-        >
+        <v-alert type="error" v-if="editedSuccessfully === 'fail'">{{
+          $t("edit_err")
+        }}</v-alert>
+        <v-alert type="success" v-if="editedSuccessfully === 'success'">{{
+          $t("edit_success")
+        }}</v-alert>
       </div>
     </v-overlay>
   </v-card>
@@ -217,20 +228,22 @@ export default {
     editGlobalVariableMixin
   ],
 
-  data: () => ({
-    dataFetched: false,
-    modifiedCustomGeneralProducts: {},
-    modifiedNonCustomGeneralProducts: {},
-    modifiedShippingFees: {},
-    modifiedFacePrice: null,
-    editedSuccessfully: "none",
+  data() {
+    return {
+      dataFetched: false,
+      modifiedCustomGeneralProducts: {},
+      modifiedNonCustomGeneralProducts: {},
+      modifiedShippingFees: {},
+      modifiedFacePrice: null,
+      editedSuccessfully: "none",
 
-    valid: false,
-    numberRules: [
-      v => v === 0 || !!v || "This field is required!",
-      v => /^[0-9]+$/.test(v) || "Only numbers are allowed!"
-    ]
-  }),
+      valid: false,
+      numberRules: [
+        v => v === 0 || !!v || this.$t("number_err1"),
+        v => /^[0-9]+$/.test(v) || this.$t("number_err2")
+      ]
+    };
+  },
 
   methods: {
     applyGlobalVariableChanges: async function(
@@ -273,6 +286,10 @@ export default {
     },
     closeEditedSuccessfullyWindow: function() {
       this.editedSuccessfully = "none";
+    },
+    getProductName(product) {
+      if (this.$root.$i18n.locale === "en") return product.productName;
+      else return product.productName_Ar;
     }
   },
   computed: {

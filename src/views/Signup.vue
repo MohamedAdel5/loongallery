@@ -2,39 +2,40 @@
   <v-container class="mb-16">
     <v-card class="main d-flex justify-center flex-column mt-10 mb-16">
       <v-card-title class="d-block text-center pt-8 secondary--text"
-        ><span class="signup">Signup</span></v-card-title
+        ><span class="signup">{{ $t("signup") }}</span></v-card-title
       >
       <v-container>
         <v-row class="d-flex justify-center">
           <v-col cols="8">
-            <v-form v-model="valid" ref="form">
+            <!-- a key is added to the form element to make it re-render when the language is switched -->
+            <v-form v-model="valid" ref="form" :key="$root.$i18n.locale">
               <v-text-field
                 v-model="name"
-                label="Name"
+                :label="$t('name')"
                 :rules="nameRules"
               ></v-text-field>
               <v-container
                 class="my-2"
                 style="border: solid 1px grey; border-radius: 5px;"
               >
-                <v-label>Phone Number</v-label>
+                <v-label>{{ $t("phone_number") }}</v-label>
                 <v-text-field
                   v-model="phone1"
-                  label="First Phone Number (Required)"
+                  :label="$t('phone1')"
                   prefix="+2"
                   placeholder="011122333"
                   :rules="mainPhoneRules"
                 ></v-text-field>
                 <v-text-field
                   v-model="phone2"
-                  label="Second Phone Number"
+                  :label="$t('phone2')"
                   prefix="+2"
                   placeholder="011122333"
                   :rules="phoneRules"
                 ></v-text-field>
                 <v-text-field
                   v-model="phone3"
-                  label="Third Phone Number"
+                  :label="$t('phone3')"
                   prefix="+2"
                   placeholder="011122333"
                   :rules="phoneRules"
@@ -44,40 +45,43 @@
                 class="my-2"
                 style="border: solid 1px grey; border-radius: 5px;"
               >
-                <v-label class="font-weight-light">Home Address</v-label>
+                <v-label class="font-weight-light">{{ $t("address") }}</v-label>
                 <p class="caption">
-                  Please write in Arabic and add any useful details.
+                  {{ $t("address_note") }}
                 </p>
                 <v-textarea
                   v-model="address"
                   :rules="addressRules"
                   filled
-                  label="Detailed Address For Shipping"
+                  :label="$t('address_placeholder')"
                   rows="4"
                   counter="1000"
                 ></v-textarea>
-                <v-text-field v-model="city" label="City"></v-text-field>
+                <v-text-field v-model="city" :label="$t('city')"></v-text-field>
                 <v-text-field
                   v-model="street"
-                  label="Street Name/Number"
+                  :label="$t('street')"
+                ></v-text-field>
+                <v-text-field
+                  v-model="building"
+                  :label="$t('building')"
                 ></v-text-field>
                 <v-text-field
                   v-model="appartment"
-                  label="Appartment/Suite number, ..etc"
-                  hint="Write your appartment number."
+                  :label="$t('appartment')"
                 ></v-text-field>
               </v-container>
 
               <v-text-field
                 v-model="email"
                 :rules="emailRules"
-                label="E-mail"
+                :label="$t('email')"
               ></v-text-field>
 
               <v-text-field
                 v-model="password"
                 :rules="passwordRules"
-                label="Password"
+                :label="$t('password')"
                 :type="showPassword ? 'text' : 'password'"
                 :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                 @click:append="showPassword = !showPassword"
@@ -86,7 +90,7 @@
               <v-text-field
                 v-model="passwordCheck"
                 :error-messages="passwordCheckErrors"
-                label="Rewrite Password"
+                :label="$t('rewrite_password')"
                 :rules="passwordCheckRules"
                 :type="showPasswordCheck ? 'text' : 'password'"
                 :append-icon="showPasswordCheck ? 'mdi-eye' : 'mdi-eye-off'"
@@ -95,18 +99,18 @@
 
               <v-checkbox
                 v-model="agreement"
-                :label="`I agree to receive emails from loongallery.`"
+                :label="$t('agreement')"
               ></v-checkbox>
               <v-btn
                 class="my-4"
                 color="secondary"
                 @click="signupSubmit"
                 :disabled="!agreement"
-                >Signup</v-btn
+                >{{ $t("signup") }}</v-btn
               >
-              <v-alert type="error" v-if="signupFail"
-                >Could not signup. Please try again.</v-alert
-              >
+              <v-alert type="error" v-if="signupFail">{{
+                $t("signup_fail")
+              }}</v-alert>
             </v-form>
           </v-col>
         </v-row>
@@ -121,54 +125,71 @@ import { signupMixin } from "@/mixins/apiMixins";
 export default {
   name: "signup",
   mixins: [signupMixin],
-  data: () => ({
-    valid: false,
-    signupFail: null,
-    name: "",
-    phone1: "",
-    phone2: "",
-    phone3: "",
-    address: "",
-    city: "",
-    street: "",
-    appartment: "",
-    email: "",
-    password: "",
-    passwordCheck: "",
-    showPassword: false,
-    showPasswordCheck: false,
-    nameRules: [
-      v => !!v || "Name is required",
-      v =>
-        /^[\u0600-\u065F\u066A-\u06EF\u06FA-\u06FF]+[\u0600-\u065F\u066A-\u06EF\u06FA-\u06FF- ]*$|^[a-zA-Z]+[a-zA-Z-' ]*$/.test(
-          v
-        ) ||
-        "Must use English or Arabic letters and special characters(space, ',  -)",
-      v => (v && v.length) <= 50 || "Must not exceed 50 characters"
-    ],
-    phoneRules: [v => /^$|^(01)[0-9]{9}$/.test(v) || "Wrong phone format"],
-    addressRules: [v => !!v || "Address is required"],
-    mainPhoneRules: [
-      v => !!v || "Phone number is required",
-      v => /^(01)[0-9]{9}$/.test(v) || "Wrong phone format"
-    ],
-    emailRules: [
-      v => !!v || "E-mail is required",
-      v => /.+@.+\..+/.test(v) || "E-mail must be valid"
-    ],
-    passwordRules: [
-      v => !!v || "Password is required",
-      v => v.length > 8 || "Password length must be 8-50 characters"
-    ],
-    passwordCheckRules: [v => !!v || "Password check is required"],
-    agreement: false
-  }),
+  data() {
+    return {
+      valid: false,
+      signupFail: null,
+      name: "",
+      phone1: "",
+      phone2: "",
+      phone3: "",
+      address: "",
+      city: "",
+      street: "",
+      building: "",
+      appartment: "",
+      email: "",
+      password: "",
+      passwordCheck: "",
+      showPassword: false,
+      showPasswordCheck: false,
+
+      agreement: false
+    };
+  },
 
   computed: {
     passwordCheckErrors() {
       if (this.passwordCheck !== this.password)
         return ["Passwords don't match"];
       else return [];
+    },
+    nameRules() {
+      return [
+        v => !!v || this.$t("name_err1"),
+        v =>
+          /^[\u0600-\u065F\u066A-\u06EF\u06FA-\u06FF]+[\u0600-\u065F\u066A-\u06EF\u06FA-\u06FF- ]*$|^[a-zA-Z]+[a-zA-Z-' ]*$/.test(
+            v
+          ) || this.$t("name_err2"),
+        v => (v && v.length) <= 50 || this.$t("name_err3")
+      ];
+    },
+    phoneRules() {
+      return [v => /^$|^(01)[0-9]{9}$/.test(v) || this.$t("phone_err1")];
+    },
+    addressRules() {
+      return [v => !!v || this.$t("address_err")];
+    },
+    mainPhoneRules() {
+      return [
+        v => !!v || this.$t("phone_err2"),
+        v => /^(01)[0-9]{9}$/.test(v) || this.$t("phone_err1")
+      ];
+    },
+    emailRules() {
+      return [
+        v => !!v || this.$t("email_err1"),
+        v => /.+@.+\..+/.test(v) || this.$t("email_err2")
+      ];
+    },
+    passwordRules() {
+      return [
+        v => !!v || this.$t("password_err1"),
+        v => v.length > 8 || this.$t("password_err2")
+      ];
+    },
+    passwordCheckRules() {
+      return [v => !!v || this.$t("password_err3")];
     }
   },
 
@@ -185,6 +206,7 @@ export default {
           addresses: [
             `المدينة:${this.city || "لم يذكر"}. 
 الشارع:${this.street || "لم يذكر"}. 
+العمارة:${this.building || "لم يذكر"}. 
 الشقة:${this.appartment || "لم يذكر"}. 
 العنوان بالتحديد: ${this.address}.`
           ],
@@ -200,7 +222,8 @@ export default {
     if (this.$store.getters.loggedIn) {
       this.$router.push(`/home`).catch(() => {});
     }
-  }
+  },
+  mounted() {}
 };
 </script>
 

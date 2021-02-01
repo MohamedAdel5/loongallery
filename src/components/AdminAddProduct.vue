@@ -2,12 +2,12 @@
   <v-card class="main" light>
     <h2 class="text-center py-10 secondary--text">Add New Product</h2>
     <v-container class="d-flex flex-column align-content-space-around pa-10">
-      <v-form v-model="valid" ref="form">
+      <v-form v-model="valid" ref="form" :key="$root.$i18n.locale">
         <v-row>
           <v-col cols="10">
             <v-row>
               <p class="font-weight-light secondary--text">
-                Upload Product Image (300x300)pixels
+                {{ $t("product_image") }} (300x300)px
               </p>
             </v-row>
             <v-row>
@@ -15,7 +15,7 @@
               <v-file-input
                 dense
                 accept="image/*"
-                label="Select From Device..."
+                :label="$t('select_image')"
                 @change="selectFile"
                 :rules="fileRules"
               ></v-file-input>
@@ -23,9 +23,9 @@
             <v-row class="py-2">
               <v-col cols="6" class="d-flex justify-left align-center pa-0">
                 <v-label
-                  ><span class="black--text caption"
-                    >Product skuCode</span
-                  ></v-label
+                  ><span class="black--text caption">{{
+                    $t("sku_code")
+                  }}</span></v-label
                 >
               </v-col>
               <v-col
@@ -41,9 +41,9 @@
             <v-row class="py-2">
               <v-col cols="6" class="d-flex justify-left align-center pa-0">
                 <v-label
-                  ><span class="black--text caption"
-                    >Choose Category</span
-                  ></v-label
+                  ><span class="black--text caption">{{
+                    $t("product_category")
+                  }}</span></v-label
                 >
               </v-col>
               <v-col
@@ -56,7 +56,6 @@
                   single-line
                   :items="categories"
                   standard
-                  label="style"
                   :rules="categoryRules"
                 >
                 </v-select>
@@ -69,20 +68,19 @@
                   @click="addProductSubmit"
                   max-width="200px"
                   color="success"
-                  >Add</v-btn
+                  >{{ $t("submit") }}</v-btn
                 >
               </v-col>
             </v-row>
             <v-row class="mt-10">
               <v-col cols="12" class="pa-0" sm="6">
                 <v-alert type="error" v-if="responseResult === 'fail'"
-                  >Failed to make the product. Please check that the SKU code is
-                  unique (Not the same as another product) and try
-                  again.</v-alert
+                  >{{ $t("save_fail") }} <br />
+                  {{ $t("edit_fail_note") }}</v-alert
                 >
-                <v-alert type="success" v-if="responseResult === 'success'"
-                  >Product is added successfully.</v-alert
-                >
+                <v-alert type="success" v-if="responseResult === 'success'">{{
+                  $t("save_success")
+                }}</v-alert>
               </v-col>
             </v-row>
           </v-col>
@@ -100,22 +98,37 @@ export default {
   mixins: [addProductMixin],
   computed: {
     categories() {
-      return this.$store.getters.categories;
+      if (this.$root.$i18n.locale === "en")
+        return this.$store.getters.categories;
+      else {
+        const items = [];
+        const nonCustomGeneralProducts = this.$store.getters
+          .nonCustomGeneralProducts;
+        for (let product of Object.keys(nonCustomGeneralProducts)) {
+          items.push({
+            text: nonCustomGeneralProducts[product].productName_Ar,
+            value: product
+          });
+        }
+        return items;
+      }
     }
   },
-  data: () => ({
-    uploadedImage: undefined, //uploaded image
-    responseResult: "none",
-    productCategory: "",
-    productSkuCode: "",
-    productSkuCodeRules: [
-      v => !!v || "Product code is required",
-      v => (v && v.length <= 20) || "Product code must not exceed 20 characters"
-    ],
-    fileRules: [v => !!v || "Select a file."],
-    categoryRules: [v => !!v || "Choose a category."],
-    valid: false
-  }),
+  data() {
+    return {
+      uploadedImage: undefined, //uploaded image
+      responseResult: "none",
+      productCategory: "",
+      productSkuCode: "",
+      productSkuCodeRules: [
+        v => !!v || this.$t("sku_code_err2"),
+        v => (v && v.length <= 20) || this.$t("sku_code_err1")
+      ],
+      fileRules: [v => !!v || this.$t("file_err")],
+      categoryRules: [v => !!v || this.$t("category_err")],
+      valid: false
+    };
+  },
   methods: {
     selectFile(file) {
       this.uploadedImage = file;

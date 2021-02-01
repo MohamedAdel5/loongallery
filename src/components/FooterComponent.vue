@@ -2,7 +2,7 @@
   <v-footer padless color="primary white--text" style="z-index: 10">
     <v-card width="100%" class="primary white--text text-center">
       <v-card-text>
-        <b class="white--text">Contact Us </b> <br />
+        <b class="white--text">{{ this.$t("contact_us") }} </b> <br />
         <a
           v-for="item in items"
           :key="item.link"

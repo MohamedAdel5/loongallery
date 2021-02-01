@@ -2,7 +2,7 @@
   <v-container>
     <v-card class="main d-flex justify-center flex-column mt-10 mb-16">
       <v-card-title class="d-block text-center pt-8 secondary--text"
-        ><span class="login">Login</span></v-card-title
+        ><span class="login">{{ $t("login") }}</span></v-card-title
       >
       <v-container>
         <v-row class="d-flex justify-center">
@@ -11,24 +11,24 @@
               <v-text-field
                 v-model="email"
                 :rules="emailRules"
-                label="E-mail"
+                :label="$t('email')"
               ></v-text-field>
 
               <v-text-field
                 v-model="password"
                 :rules="passwordRules"
-                label="Password"
+                :label="$t('password')"
                 :type="showPassword ? 'text' : 'password'"
                 :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                 @click:append="showPassword = !showPassword"
               ></v-text-field>
 
-              <v-btn class="my-4" color="secondary" @click="loginSubmit"
-                >Login</v-btn
-              >
-              <v-alert type="error" v-if="loginFail"
-                >Wrong email or password</v-alert
-              >
+              <v-btn class="my-4" color="secondary" @click="loginSubmit">{{
+                $t("login")
+              }}</v-btn>
+              <v-alert type="error" v-if="loginFail">{{
+                $t("wrong_email_or_pass")
+              }}</v-alert>
             </v-form>
           </v-col>
         </v-row>
@@ -44,21 +44,23 @@ export default {
   name: "admin-login",
   mixins: [adminLoginMixin],
 
-  data: () => ({
-    valid: false,
-    loginFail: null,
-    email: "",
-    password: "",
-    showPassword: false,
-    emailRules: [
-      v => !!v || "E-mail is required",
-      v => /.+@.+\..+/.test(v) || "E-mail must be valid"
-    ],
-    passwordRules: [
-      v => !!v || "Password is required",
-      v => v.length > 8 || "Password length must be 8-50 characters"
-    ]
-  }),
+  data() {
+    return {
+      valid: false,
+      loginFail: null,
+      email: "",
+      password: "",
+      showPassword: false,
+      emailRules: [
+        v => !!v || "E-mail is required",
+        v => /.+@.+\..+/.test(v) || "E-mail must be valid"
+      ],
+      passwordRules: [
+        v => !!v || "Password is required",
+        v => v.length > 8 || "Password length must be 8-50 characters"
+      ]
+    };
+  },
 
   methods: {
     loginSubmit: async function() {

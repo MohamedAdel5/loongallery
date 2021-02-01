@@ -1,3 +1,11 @@
+<i18n>
+{
+  "en": {		
+  },
+  "ar": {
+  }
+}
+</i18n>
 <template>
   <v-app v-if="dataFetched">
     <appbar />
@@ -63,12 +71,14 @@ export default {
     Appbar,
     FooterComponent
   },
-  data: () => ({
-    showAnnouncement: false,
-    announcementImage: null,
-    announcementImageSize: process.env.VUE_APP_ANNOUNCEMENT_IMAGE_SIZE,
-    dataFetched: false
-  }),
+  data() {
+    return {
+      showAnnouncement: false,
+      announcementImage: null,
+      announcementImageSize: process.env.VUE_APP_ANNOUNCEMENT_IMAGE_SIZE,
+      dataFetched: false
+    };
+  },
   methods: {
     getAnnouncement: async function() {
       this.announcementImage = await this.setAnnouncement();
@@ -85,6 +95,10 @@ export default {
         this.$store.dispatch("setLoggedInStatus", false);
         this.$store.dispatch("setUser", {});
       }
+    },
+    "$root.$i18n.locale": function() {
+      if (this.$root.$i18n.locale === "ar") this.$vuetify.rtl = true;
+      else this.$vuetify.rtl = false;
     }
   },
   mounted: async function() {

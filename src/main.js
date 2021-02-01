@@ -4,6 +4,7 @@ import store from "./store/store";
 import router from "./router/router";
 import vuetify from "./plugins/vuetify";
 import axios from "axios";
+import i18n from "./i18n";
 
 const baseURL =
   process.env.VUE_APP_NODE_ENV === "production"
@@ -24,5 +25,6 @@ new Vue({
   store,
   router,
   vuetify,
+  i18n,
   render: h => h(App)
 }).$mount("#app");

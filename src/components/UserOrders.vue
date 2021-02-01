@@ -1,8 +1,8 @@
 <template>
   <v-card v-if="dataFetched" class="main mb-16">
-    <v-card-title class="d-block text-center secondary--text h1"
-      >My Orders</v-card-title
-    >
+    <v-card-title class="d-block text-center secondary--text h1">{{
+      $t("my_orders")
+    }}</v-card-title>
     <v-container>
       <v-row>
         <v-col cols="12">
@@ -11,7 +11,7 @@
               <tbody>
                 <tr>
                   <td>
-                    Total orders
+                    {{ $t("total_orders") }}
                   </td>
                   <td>
                     {{ totalCount }}
@@ -19,7 +19,7 @@
                 </tr>
                 <tr>
                   <td>
-                    Total undelivered orders:
+                    {{ $t("total_undelivered") }}
                   </td>
                   <td>
                     {{ undeliveredCount }}
@@ -27,7 +27,7 @@
                 </tr>
                 <tr>
                   <td>
-                    Total delivered orders:
+                    {{ $t("total_delivered") }}
                   </td>
                   <td>
                     {{ totalCount - undeliveredCount }}
@@ -69,15 +69,19 @@
               v-text="`Order: ${(page - 1) * elementsPerPage + (i + 1)}`"
             ></v-list-item-title>
             <div class="text-right">
-              <v-chip v-if="order.delivered" small color="success" width="100"
-                >Delivered</v-chip
+              <v-chip
+                v-if="order.delivered"
+                small
+                color="success"
+                width="100"
+                >{{ $t("delivered") }}</v-chip
               >
               <v-chip
                 v-if="hasACustomOrder(order)"
                 small
                 color="yellow"
                 width="100"
-                >Has Custom Order(s)</v-chip
+                >{{ $t("has_custom_order") }}</v-chip
               >
             </div>
           </v-list-item-content>
@@ -88,37 +92,37 @@
               <template v-slot:default>
                 <tbody>
                   <tr>
-                    <td>Order code</td>
+                    <td>{{ $t("order_code") }}</td>
                     <td>
                       {{ order.code }}
                     </td>
                   </tr>
                   <tr>
-                    <td>Date</td>
+                    <td>{{ $t("date") }}</td>
                     <td>
                       {{ new Date(order.date).toString() }}
                     </td>
                   </tr>
                   <tr>
-                    <td>Name</td>
+                    <td>{{ $t("name") }}</td>
                     <td>
                       {{ order.customerName }}
                     </td>
                   </tr>
                   <tr>
-                    <td>Shipping Method</td>
+                    <td>{{ $t("shipping_method") }}</td>
                     <td>
                       {{ orderShippingMethod(order) }}
                     </td>
                   </tr>
                   <tr>
-                    <td>Address</td>
+                    <td>{{ $t("address") }}</td>
                     <td>
                       {{ order.customerAddress }}
                     </td>
                   </tr>
                   <tr>
-                    <td>Phone Numbers</td>
+                    <td>{{ $t("phone_number") }}</td>
                     <td>
                       <tr
                         v-for="phone in order.customerPhoneNumbers"
@@ -131,7 +135,7 @@
                     </td>
                   </tr>
                   <tr>
-                    <td>Products</td>
+                    <td>{{ $t("products") }}</td>
                     <td>
                       <tr
                         v-for="(product, j) in order.products"
@@ -148,15 +152,11 @@
                             </tr>
                             <template v-if="!isCustomProduct(product)">
                               <tr>
-                                <td>Product SKU code</td>
+                                <td>{{ $t("sku_code") }}</td>
                                 <td>{{ product.skuCode }}</td>
                               </tr>
                               <tr>
-                                <td>SKU code</td>
-                                <td>{{ product.skuCode }}</td>
-                              </tr>
-                              <tr>
-                                <td>Product Image</td>
+                                <td>{{ $t("product_image") }}</td>
                                 <td>
                                   <a :href="product.image" target="_blank">
                                     <v-img
@@ -169,35 +169,31 @@
                                 </td>
                               </tr>
                               <tr>
-                                <td>Size</td>
-                                <td>{{ product.size }}</td>
+                                <td>{{ $t("size") }}</td>
+                                <td class="ltr_dir">{{ product.size }}</td>
                               </tr>
                               <tr>
-                                <td>Number of people/faces</td>
-                                <td>{{ product.numberOfFaces }}</td>
-                              </tr>
-                              <tr>
-                                <td>Quantity</td>
+                                <td>{{ $t("quantity") }}</td>
                                 <td>{{ product.quantity }}</td>
                               </tr>
                               <tr>
-                                <td>Price</td>
-                                <td>{{ product.price }}</td>
-                              </tr>
-                              <tr>
-                                <td>Product Category</td>
+                                <td>{{ $t("product_category") }}</td>
 
                                 <td>
-                                  {{ product.generalProduct.productName }}
+                                  {{ getProductCategoryName(product) }}
                                 </td>
+                              </tr>
+                              <tr>
+                                <td>{{ $t("price") }}</td>
+                                <td>{{ product.price }}</td>
                               </tr>
                             </template>
                             <template v-else>
-                              <v-chip small color="yellow" width="100"
-                                >Custom Order</v-chip
-                              >
+                              <v-chip small color="yellow" width="100">{{
+                                $t("custom_order")
+                              }}</v-chip>
                               <tr>
-                                <td>Product Image</td>
+                                <td>{{ $t("product_image") }}</td>
                                 <td>
                                   <a :href="product.image" target="_blank">
                                     <v-img
@@ -210,27 +206,26 @@
                                 </td>
                               </tr>
                               <tr>
-                                <td>Size</td>
-                                <td>{{ product.size }}</td>
+                                <td>{{ $t("size") }}</td>
+                                <td class="ltr_dir">{{ product.size }}</td>
                               </tr>
                               <tr>
-                                <td>Number of people/faces</td>
+                                <td>{{ $t("number_of_faces") }}</td>
                                 <td>{{ product.numberOfFaces }}</td>
                               </tr>
                               <tr>
-                                <td>Quantity</td>
+                                <td>{{ $t("quantity") }}</td>
                                 <td>{{ product.quantity }}</td>
                               </tr>
                               <tr>
-                                <td>Price</td>
-                                <td>{{ product.price }}</td>
+                                <td>{{ $t("product_category") }}</td>
+                                <td>
+                                  {{ getProductCategoryName(product) }}
+                                </td>
                               </tr>
                               <tr>
-                                <td>Product Category</td>
-
-                                <td>
-                                  {{ product.generalProduct.productName }}
-                                </td>
+                                <td>{{ $t("price") }}</td>
+                                <td>{{ product.price }}</td>
                               </tr>
                             </template>
                           </tbody>
@@ -239,13 +234,13 @@
                     </td>
                   </tr>
                   <tr>
-                    <td>Shipping Fees</td>
+                    <td>{{ $t("shipping_fees") }}</td>
                     <td>
                       {{ order.shippingFees }}
                     </td>
                   </tr>
                   <tr>
-                    <td>Total price</td>
+                    <td>{{ $t("total_price") }}</td>
                     <td>
                       {{ totalPrice(i) }}
                     </td>

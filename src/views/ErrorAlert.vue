@@ -5,9 +5,9 @@
       color="rgba(0,0,0,0)"
     >
       <v-row class="d-flex justify-center">
-        <v-card-title class="secondary--text"
-          >We are sorry, there is a fatal error. Please try again.</v-card-title
-        >
+        <v-card-title class="secondary--text">{{
+          $t("fatal_error")
+        }}</v-card-title>
       </v-row>
       <v-card-actions>
         <v-container>
@@ -20,9 +20,7 @@
               class="secondary--text text-center"
             >
               <v-card-text>
-                <b class="white--text"
-                  >Still facing the same issue? Contact Us</b
-                >
+                <b class="white--text">{{ $t("fatal_error_contact_us") }}</b>
                 <br />
                 <v-divider></v-divider>
                 <a
@@ -41,9 +39,9 @@
             </v-card>
           </v-row>
           <v-row class="mt-10 d-flex justify-center">
-            <router-link to="/" class="secondary--text"
-              >Back to home</router-link
-            >
+            <router-link to="/" class="secondary--text">{{
+              $t("back_to_home")
+            }}</router-link>
           </v-row>
         </v-container>
       </v-card-actions>
