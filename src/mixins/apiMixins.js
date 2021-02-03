@@ -34,6 +34,42 @@ module.exports.setFacePriceMixin = {
   }
 };
 
+module.exports.setGiftBowPriceMixin = {
+  methods: {
+    setGiftBowPrice: async function() {
+      try {
+        let res;
+        if (!this.$store.getters.giftBowPrice) {
+          res = await this.$http.get(`/global-variables/giftBowPrice`);
+          if (res.status === 200)
+            this.$store.dispatch("setGiftBowPrice", res.data.giftBowPrice);
+          else throw new Error("fail");
+        }
+      } catch (err) {
+        this.$router.push(`/error`).catch(() => {});
+      }
+    }
+  }
+};
+
+module.exports.setGiftWrapPriceMixin = {
+  methods: {
+    setGiftWrapPrice: async function() {
+      try {
+        let res;
+        if (!this.$store.getters.giftWrapPrice) {
+          res = await this.$http.get(`/global-variables/giftWrapPrice`);
+          if (res.status === 200)
+            this.$store.dispatch("setGiftWrapPrice", res.data.giftWrapPrice);
+          else throw new Error("fail");
+        }
+      } catch (err) {
+        this.$router.push(`/error`).catch(() => {});
+      }
+    }
+  }
+};
+
 module.exports.setCustomGeneralProductsMixin = {
   methods: {
     setCustomGeneralProducts: async function() {
@@ -203,6 +239,22 @@ module.exports.setAdminOrdersMixin = {
             headers: { Authorization: this.$store.getters.adminAuthJwt }
           }
         );
+        if (res.status === 200) return res.data;
+        else throw new Error("fail");
+      } catch (err) {
+        this.$router.push(`/error`).catch(() => {});
+      }
+    }
+  }
+};
+
+module.exports.searchOrderMixin = {
+  methods: {
+    searchOrder: async function(orderCode) {
+      try {
+        let res = await this.$http.get(`/orders?code=${orderCode}`, {
+          headers: { Authorization: this.$store.getters.adminAuthJwt }
+        });
         if (res.status === 200) return res.data;
         else throw new Error("fail");
       } catch (err) {
@@ -391,6 +443,96 @@ module.exports.adminLoginMixin = {
   }
 };
 
+module.exports.adminSignupMixin = {
+  methods: {
+    adminSignup: async function(newAdminObject) {
+      try {
+        const res = await this.$http.post(
+          "/authentication/admin-signup",
+          newAdminObject,
+          {
+            headers: { Authorization: this.$store.getters.adminAuthJwt }
+          }
+        );
+
+        if (res.status === 200) {
+          return true;
+        } else {
+          return false;
+        }
+      } catch (err) {
+        return false;
+      }
+    }
+  }
+};
+
+module.exports.getAdminsMixin = {
+  methods: {
+    getAdmins: async function() {
+      try {
+        const res = await this.$http.get("/authentication/", {
+          headers: { Authorization: this.$store.getters.adminAuthJwt }
+        });
+
+        if (res.status === 200) {
+          return res.data.admins;
+        } else {
+          throw new Error("fail");
+        }
+      } catch (err) {
+        this.$router.push(`/error`).catch(() => {});
+      }
+    }
+  }
+};
+
+module.exports.deleteAdminMixin = {
+  methods: {
+    deleteAdmin: async function(id) {
+      try {
+        const res = await this.$http.delete(`/authentication/${id}`, {
+          headers: { Authorization: this.$store.getters.adminAuthJwt }
+        });
+
+        if (res.status === 200) {
+          return true;
+        } else {
+          return false;
+        }
+      } catch (err) {
+        return false;
+      }
+    }
+  }
+};
+
+module.exports.adminChangePasswordMixin = {
+  methods: {
+    adminChangePassword: async function(password) {
+      try {
+        const res = await this.$http.patch(
+          `/authentication/admin-change-pass`,
+          {
+            password
+          },
+          {
+            headers: { Authorization: this.$store.getters.adminAuthJwt }
+          }
+        );
+
+        if (res.status === 200) {
+          return true;
+        } else {
+          return false;
+        }
+      } catch (err) {
+        return false;
+      }
+    }
+  }
+};
+
 module.exports.setSeenMixin = {
   methods: {
     setSeen: async function(orderID) {
@@ -532,7 +674,7 @@ module.exports.setAnnouncementMixin = {
         const res = await this.$http.get("/offers");
         if (res.status !== 200 || !res.data.announcement) return;
         const announcementImage = res.data.announcement.image;
-        if (!announcementImage) throw Error("fail");
+        if (!announcementImage) throw new Error("fail");
         return announcementImage;
       } catch (err) {
         return null;

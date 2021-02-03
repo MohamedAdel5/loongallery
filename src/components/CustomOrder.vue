@@ -4,7 +4,7 @@
       {{ $t("make_a_custom_order") }}
     </h2>
     <v-container class="d-flex flex-column align-content-space-around pa-10">
-      <v-form v-model="valid" ref="form">
+      <v-form v-model="valid" ref="form" :key="$root.$i18n.locale">
         <v-row>
           <v-col cols="10">
             <v-row
@@ -47,28 +47,29 @@
                 dense
                 accept="image/*"
                 :label="$t('select_image')"
-                @change="selectFile"
+                v-model="uploadedImage"
+                :rules="fileRules"
               ></v-file-input>
             </v-row>
             <v-row class="pt-6">
               <v-text-field
                 :disabled="!addToCartButton"
                 v-model="numberOfFaces"
-                min="0"
                 :rules="numberOfFacesRules"
-                type="number"
+                min="0"
                 :label="$t('number_of_faces_note')"
                 persistent-hint
                 :hint="$t('number_of_faces_hint')"
+                type="number"
                 dense
               ></v-text-field>
             </v-row>
             <v-row>
               <v-col cols="6" class="d-flex justify-left align-center pa-0">
-                <v-label
+                <label
                   ><span class="dark--text caption">{{
                     $t("choose_drawing_style")
-                  }}</span></v-label
+                  }}</span></label
                 >
               </v-col>
               <v-col
@@ -92,10 +93,10 @@
             </v-row>
             <v-row>
               <v-col cols="6" class="d-flex justify-left align-center pa-0">
-                <v-label
+                <label
                   ><span class="dark--text caption">{{
                     $t("choose_size")
-                  }}</span></v-label
+                  }}</span></label
                 >
               </v-col>
               <v-col
@@ -116,6 +117,39 @@
                 :to="'/preview-sizes'"
                 >{{ $t("preview_sizes") }}</router-link
               >
+            </v-row>
+            <v-row class="d-block pt-4">
+              <label>{{ $t("other_notes") }}</label>
+              <v-textarea
+                :disabled="!addToCartButton"
+                v-model="otherNotes"
+                outlined
+                dense
+              ></v-textarea>
+            </v-row>
+            <v-row>
+              <v-checkbox v-model="addGiftWrap">
+                <template v-slot:label>
+                  <label class="px-2">{{ $t("add_gift_wrap") }}</label>
+                  <v-img
+                    :src="require('@/assets/logo.jpg')"
+                    max-height="40px"
+                    max-width="40px"
+                  />
+                </template>
+              </v-checkbox>
+            </v-row>
+            <v-row class="pt-6">
+              <v-checkbox v-model="addGiftBow">
+                <template v-slot:label>
+                  <label class="px-2">{{ $t("add_gift_bow") }}</label>
+                  <v-img
+                    :src="require('@/assets/logo.jpg')"
+                    max-height="40px"
+                    max-width="40px"
+                  />
+                </template>
+              </v-checkbox>
             </v-row>
             <v-row class="pt-6">
               <v-text-field
@@ -159,7 +193,7 @@
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="12" class="d-flex justify-end pt-16 pb-0">
+          <v-col cols="12" class="d-flex justify-end pt-16 pb-2">
             <v-btn
               v-if="!addToCartButton"
               @click="makeAnotherOrder"
@@ -172,93 +206,8 @@
       </v-form>
       <v-divider></v-divider>
       <v-row style="border: solid 1px grey; border-radius: 5px" class="mt-10">
-        <v-container id="productsDetails">
-          <v-row>
-            <v-col cols="12">
-              <h3>Our products and their delivery times:</h3>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12">
-              <h4>Digital Portrait</h4>
-              <ul>
-                <li>
-                  Material <br />
-                  <ul>
-                    <li>Printed on a 12mm MDF wood.</li>
-                    <li>
-                      Has two hangers on the back to be hanged either
-                      horizontally or vertically.
-                    </li>
-                    <li>
-                      Has an extra protection screen to protect it from water
-                      and dust.
-                    </li>
-                    <li>Has a leather-like texture and can cleaned easily.</li>
-                  </ul>
-                </li>
-                <li>
-                  Delivery time <br />
-                  <ul>
-                    <li>Delivery to a home: 3-5 days</li>
-                    <li>Delivery to a metro station: 2-3 days</li>
-                    <li>Receive from our branch location: 2-3 days</li>
-                  </ul>
-                </li>
-              </ul>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12">
-              <h4>Wood carving</h4>
-              <ul>
-                <li>
-                  Material <br />
-                  <ul>
-                    <li>Natural wood.</li>
-                    <li>
-                      It has text carved in it. You can write:
-                      <ul>
-                        <li>A name</li>
-                        <li>A date</li>
-                        <li>A quote</li>
-                      </ul>
-                    </li>
-                  </ul>
-                </li>
-                <li>
-                  Delivery time <br />
-                  <ul>
-                    <li>Delivery to a home: within 7 days</li>
-                    <li>Delivery to a metro station: within 7 days</li>
-                    <li>Receive from our branch location: within 7 days</li>
-                  </ul>
-                </li>
-              </ul>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12">
-              <h4>Others (Pencil, Pen, Coal, Gouache, watercolor)</h4>
-              <ul>
-                <li>
-                  Material <br />
-                  <ul>
-                    <li>Hand drawing on heavy paper (canson).</li>
-                    <li>Kept in a black wood frame.</li>
-                  </ul>
-                </li>
-                <li>
-                  Delivery time <br />
-                  <ul>
-                    <li>Delivery to a home: within 7 days</li>
-                    <li>Delivery to a metro station: within 7 days</li>
-                    <li>Receive from our branch location: within 7 days</li>
-                  </ul>
-                </li>
-              </ul>
-            </v-col>
-          </v-row>
+        <v-container id="productsDetails" class="pa-2">
+          <custom-products-details />
         </v-container>
       </v-row>
     </v-container>
@@ -268,11 +217,23 @@
 <script>
 import {
   setCustomGeneralProductsMixin,
-  setFacePriceMixin
+  setFacePriceMixin,
+  setGiftBowPriceMixin,
+  setGiftWrapPriceMixin
 } from "@/mixins/apiMixins";
+import CustomProductsDetails from "./CustomProductsDetails";
+
 export default {
   name: "custom-order",
-  mixins: [setCustomGeneralProductsMixin, setFacePriceMixin],
+  mixins: [
+    setCustomGeneralProductsMixin,
+    setFacePriceMixin,
+    setGiftBowPriceMixin,
+    setGiftWrapPriceMixin
+  ],
+  components: {
+    CustomProductsDetails
+  },
   computed: {
     portraitSizes() {
       if (this.$store.getters.customDrawingStyles.includes(this.drawingStyle)) {
@@ -304,10 +265,15 @@ export default {
         if (this.numberOfFaces >= 1)
           facesPrice = (this.numberOfFaces - 1) * this.$store.getters.facePrice;
         else facesPrice = 0;
+        let extraCost = 0;
+        if (this.addGiftBow) extraCost += this.$store.getters.giftBowPrice;
+        if (this.addGiftWrap) extraCost += this.$store.getters.giftWrapPrice;
+
         return (
           (this.$store.getters.customGeneralProducts[this.drawingStyle]
             .sizesPrices[this.size] +
-            facesPrice) *
+            facesPrice +
+            extraCost) *
           this.quantity
         );
       } else return "";
@@ -319,6 +285,9 @@ export default {
       drawingStyle: "",
       size: "",
       quantity: 1,
+      otherNotes: "",
+      addGiftBow: false,
+      addGiftWrap: false,
       quantityRules: [v => v >= 1 || this.$t("quantity_err")],
       numberOfFaces: 1,
       numberOfFacesRules: [
@@ -327,13 +296,14 @@ export default {
       ],
       addToCartButton: true,
       valid: false,
-      dataFetched: false
+      dataFetched: false,
+      fileRules: [v => !!v || this.$t("file_err")]
     };
   },
   methods: {
-    selectFile(file) {
-      this.uploadedImage = file;
-    },
+    // selectFile(file) {
+    //   this.uploadedImage = file;
+    // },
     addToCart: function() {
       //Upload Image and get the link.
       //make an object contains the props {image, price, size, categories}
@@ -352,6 +322,13 @@ export default {
         quantity: this.quantity,
         price: this.price
       };
+      let extraNotes = "";
+      if (this.addGiftBow) extraNotes += " ضافة فيونكة.\n ";
+      if (this.addGiftWrap) extraNotes += " إضافة تغليف هدايا.\n ";
+
+      if (this.otherNotes.length > 0)
+        product.otherNotes = `${extraNotes} \n ${this.otherNotes}`;
+
       this.$store.dispatch("addToCart", product);
     },
 
@@ -371,6 +348,8 @@ export default {
   created: async function() {
     await this.setCustomGeneralProducts();
     await this.setFacePrice();
+    await this.setGiftBowPrice();
+    await this.setGiftWrapPrice();
 
     this.dataFetched = true;
   }
@@ -389,5 +368,10 @@ h2 {
 .v-select-list,
 .v-select {
   direction: ltr !important;
+}
+label {
+  color: rgba(0, 0, 0, 0.6) !important;
+  font-size: 13px;
+  display: block;
 }
 </style>

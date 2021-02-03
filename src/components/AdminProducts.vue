@@ -208,7 +208,7 @@
       v-if="showAddNewProductWindow"
       :value="true"
     >
-      <div class="my-10">
+      <div>
         <v-btn icon @click="closeAddNewProductWindow">
           <v-icon>mdi-close</v-icon>
         </v-btn>
@@ -223,7 +223,7 @@
       v-if="showEditProductWindow"
       :value="true"
     >
-      <div class="my-10">
+      <div>
         <v-btn icon @click="closeEditProductWindow">
           <v-icon>mdi-close</v-icon>
         </v-btn>

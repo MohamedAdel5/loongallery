@@ -89,7 +89,7 @@
       <v-spacer></v-spacer>
 
       <v-toolbar-items>
-        <v-btn color="secondary" depressed @click="switchLocale">
+        <v-btn color="secondary" x-small depressed @click="switchLocale">
           <v-img
             :src="flags[otherLocale]"
             max-height="16px"

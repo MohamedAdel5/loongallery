@@ -20,7 +20,7 @@
               >
                 <v-row
                   ><h4 class="secondary--text">
-                    {{ getProductName(customGeneralProducts[style]) }}
+                    {{ getProductName(style) }}
                   </h4></v-row
                 >
                 <v-row
@@ -30,7 +30,9 @@
                   :key="j"
                 >
                   <v-col cols="12" sm="8" md="4">
-                    <v-label>{{ size[0] }}:</v-label>
+                    <label left class="ltr_dir d-inline-block"
+                      >{{ size[0] }}:</label
+                    >
                     <v-text-field
                       single-line
                       filled
@@ -71,7 +73,7 @@
               >
                 <v-row
                   ><h4 class="secondary--text">
-                    {{ getProductName(customGeneralProducts[style]) }}
+                    {{ getProductName(style) }}
                   </h4></v-row
                 >
                 <v-row
@@ -81,7 +83,7 @@
                   :key="j"
                 >
                   <v-col cols="12" sm="8" md="4">
-                    <v-label>{{ size[0] }}:</v-label>
+                    <label class="ltr_dir d-inline-block">{{ size[0] }}:</label>
                     <v-text-field
                       single-line
                       filled
@@ -119,7 +121,7 @@
               <v-container>
                 <v-row v-for="(shippingMethod, j) in shippingFees" :key="j">
                   <v-col cols="12" sm="8" md="4">
-                    <v-label>{{ shippingMethod.name_en }}:</v-label>
+                    <label>{{ shippingMethod.name_en }}:</label>
                     <v-text-field
                       min="0"
                       single-line
@@ -153,13 +155,13 @@
             <v-container>
               <v-row
                 ><h3 class="secondary--text">
-                  {{ $t("person_price") }}
+                  {{ $t("other_prices") }}
                 </h3></v-row
               >
               <v-container>
                 <v-row>
                   <v-col cols="12" sm="8" md="4">
-                    <v-label>{{ $t("person_price") }}:</v-label>
+                    <label>{{ $t("person_price") }}:</label>
                     <v-text-field
                       min="0"
                       single-line
@@ -175,6 +177,62 @@
                   <v-btn
                     @click="
                       applyGlobalVariableChanges('facePrice', modifiedFacePrice)
+                    "
+                    color="secondary"
+                    >{{ $t("submit") }}</v-btn
+                  >
+                </v-row>
+              </v-container>
+              <v-container>
+                <v-row>
+                  <v-col cols="12" sm="8" md="4">
+                    <label>{{ $t("gift_bow_price") }}:</label>
+                    <v-text-field
+                      min="0"
+                      single-line
+                      filled
+                      suffix="LE"
+                      :rules="numberRules"
+                      v-model.number="modifiedGiftBowPrice"
+                      type="number"
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+                <v-row class="d-flex justify-start">
+                  <v-btn
+                    @click="
+                      applyGlobalVariableChanges(
+                        'giftBowPrice',
+                        modifiedGiftBowPrice
+                      )
+                    "
+                    color="secondary"
+                    >{{ $t("submit") }}</v-btn
+                  >
+                </v-row>
+              </v-container>
+              <v-container>
+                <v-row>
+                  <v-col cols="12" sm="8" md="4">
+                    <label>{{ $t("gift_wrap_price") }}:</label>
+                    <v-text-field
+                      min="0"
+                      single-line
+                      filled
+                      suffix="LE"
+                      :rules="numberRules"
+                      v-model.number="modifiedGiftWrapPrice"
+                      type="number"
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+                <v-row class="d-flex justify-start">
+                  <v-btn
+                    @click="
+                      applyGlobalVariableChanges(
+                        'giftWrapPrice',
+                        modifiedGiftWrapPrice
+                      )
                     "
                     color="secondary"
                     >{{ $t("submit") }}</v-btn
@@ -214,7 +272,9 @@ import {
   setShippingFeesMixin,
   setFacePriceMixin,
   editGeneralProductMixin,
-  editGlobalVariableMixin
+  editGlobalVariableMixin,
+  setGiftBowPriceMixin,
+  setGiftWrapPriceMixin
 } from "@/mixins/apiMixins";
 
 export default {
@@ -224,6 +284,8 @@ export default {
     setNonCustomGeneralProductsMixin,
     setShippingFeesMixin,
     setFacePriceMixin,
+    setGiftBowPriceMixin,
+    setGiftWrapPriceMixin,
     editGeneralProductMixin,
     editGlobalVariableMixin
   ],
@@ -235,6 +297,9 @@ export default {
       modifiedNonCustomGeneralProducts: {},
       modifiedShippingFees: {},
       modifiedFacePrice: null,
+      modifiedGiftBowPrice: null,
+      modifiedGiftWrapPrice: null,
+
       editedSuccessfully: "none",
 
       valid: false,
@@ -287,9 +352,13 @@ export default {
     closeEditedSuccessfullyWindow: function() {
       this.editedSuccessfully = "none";
     },
-    getProductName(product) {
-      if (this.$root.$i18n.locale === "en") return product.productName;
-      else return product.productName_Ar;
+    getProductName(productName) {
+      if (this.$root.$i18n.locale === "en") return productName;
+      else {
+        if (this.customGeneralProducts[productName])
+          return this.customGeneralProducts[productName].productName_Ar;
+        else return this.nonCustomGeneralProducts[productName].productName_Ar;
+      }
     }
   },
   computed: {
@@ -304,6 +373,12 @@ export default {
     },
     facePrice() {
       return this.$store.getters.facePrice;
+    },
+    giftBowPrice() {
+      return this.$store.getters.giftBowPrice;
+    },
+    giftWrapPrice() {
+      return this.$store.getters.giftWrapPrice;
     }
   },
   mounted: async function() {
@@ -311,6 +386,9 @@ export default {
     await this.setNonCustomGeneralProducts();
     await this.setShippingFees();
     await this.setFacePrice();
+    await this.setGiftBowPrice();
+    await this.setGiftWrapPrice();
+
     this.modifiedCustomGeneralProducts = JSON.parse(
       JSON.stringify(this.customGeneralProducts)
     );
@@ -319,6 +397,8 @@ export default {
     );
     this.modifiedShippingFees = JSON.parse(JSON.stringify(this.shippingFees));
     this.modifiedFacePrice = this.facePrice;
+    this.modifiedGiftBowPrice = this.giftBowPrice;
+    this.modifiedGiftWrapPrice = this.giftWrapPrice;
 
     this.dataFetched = true;
   }

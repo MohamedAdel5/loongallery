@@ -1,6 +1,6 @@
 <template>
   <v-card v-if="dataFetched" class="main mb-16">
-    <h2 class="text-center py-10 secondary--text">Orders</h2>
+    <h2 class="text-center py-10 secondary--text">{{ $t("orders") }}</h2>
     <v-container>
       <v-row>
         <v-col cols="12">
@@ -52,6 +52,29 @@
           </v-simple-table>
         </v-col>
       </v-row>
+      <v-row class="my-0">
+        <v-col cols="12" class="my-0">
+          <p class="font-weight-light subtitle-2 my-0">
+            {{ $t("search_for_order") }}:
+          </p>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="6" class="my-0">
+          <v-text-field
+            append-icon="mdi-magnify"
+            solo
+            dense
+            v-model="searchOrderCode"
+            :label="$t('write_order_code')"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="2">
+          <v-btn color="secondary" @click="searchOrderSubmit">{{
+            $t("search")
+          }}</v-btn>
+        </v-col>
+      </v-row>
       <v-row>
         <v-col cols="12">
           <v-pagination
@@ -70,7 +93,7 @@
         </v-col>
       </v-row>
     </v-container>
-    <v-list class="main">
+    <v-list class="main" v-if="orders.length > 0">
       <v-list-group
         dark
         v-for="(order, i) in orders"
@@ -182,7 +205,7 @@
                             </tr>
                             <template v-if="!isCustomProduct(product)">
                               <tr>
-                                <td>{{ $t("sky_code") }}</td>
+                                <td>{{ $t("sku_code") }}</td>
                                 <td>{{ product.skuCode }}</td>
                               </tr>
                               <tr>
@@ -203,16 +226,14 @@
                                 <td class="ltr_dir">{{ product.size }}</td>
                               </tr>
                               <tr>
-                                <td>{{ $t("quantity") }}</td>
-                                <td>{{ product.quantity }}</td>
-                              </tr>
-
-                              <tr>
                                 <td>{{ $t("product_category") }}</td>
-
                                 <td>
                                   {{ getProductCategoryName(product) }}
                                 </td>
+                              </tr>
+                              <tr>
+                                <td>{{ $t("quantity") }}</td>
+                                <td>{{ product.quantity }}</td>
                               </tr>
                               <tr>
                                 <td>{{ $t("price") }}</td>
@@ -245,14 +266,20 @@
                                 <td>{{ product.numberOfFaces }}</td>
                               </tr>
                               <tr>
-                                <td>{{ $t("quantity") }}</td>
-                                <td>{{ product.quantity }}</td>
-                              </tr>
-                              <tr>
                                 <td>{{ $t("product_category") }}</td>
                                 <td>
                                   {{ getProductCategoryName(product) }}
                                 </td>
+                              </tr>
+                              <tr>
+                                <td>{{ $t("order_note") }}</td>
+                                <td>
+                                  {{ product.otherNotes }}
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>{{ $t("quantity") }}</td>
+                                <td>{{ product.quantity }}</td>
                               </tr>
                               <tr>
                                 <td>{{ $t("price") }}</td>
@@ -299,6 +326,8 @@
         </v-list-item>
       </v-list-group>
     </v-list>
+
+    <p class="pa-4" v-else>{{ $t("no_orders_found") }}</p>
     <v-overlay
       z-index="11"
       opacity="0.8"
@@ -379,6 +408,7 @@ export default {
   methods: {
     handleSeen: async function(order) {
       //Check if the request went well then set the seen status here
+      if (order.seen) return;
       this.showSeenError = !(await this.setSeen(order._id));
       if (!this.showSeenError) {
         order.seen = true;

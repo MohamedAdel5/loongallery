@@ -93,8 +93,10 @@
                             <td class="ltr_dir">{{ product.size }}</td>
                           </tr>
                           <tr>
-                            <td>{{ $t("quantity") }}</td>
-                            <td>{{ product.quantity }}</td>
+                            <td>{{ $t("order_note") }}</td>
+                            <td>
+                              {{ product.otherNotes }}
+                            </td>
                           </tr>
                           <tr>
                             <td>{{ $t("number_of_faces") }}</td>
@@ -106,6 +108,10 @@
                             <td>
                               {{ getProductCategory(product) }}
                             </td>
+                          </tr>
+                          <tr>
+                            <td>{{ $t("quantity") }}</td>
+                            <td>{{ product.quantity }}</td>
                           </tr>
                           <tr>
                             <td>{{ $t("price") }}</td>

@@ -214,14 +214,20 @@
                                 <td>{{ product.numberOfFaces }}</td>
                               </tr>
                               <tr>
-                                <td>{{ $t("quantity") }}</td>
-                                <td>{{ product.quantity }}</td>
-                              </tr>
-                              <tr>
                                 <td>{{ $t("product_category") }}</td>
                                 <td>
                                   {{ getProductCategoryName(product) }}
                                 </td>
+                              </tr>
+                              <tr>
+                                <td>{{ $t("order_note") }}</td>
+                                <td>
+                                  {{ product.otherNotes }}
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>{{ $t("quantity") }}</td>
+                                <td>{{ product.quantity }}</td>
                               </tr>
                               <tr>
                                 <td>{{ $t("price") }}</td>

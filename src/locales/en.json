@@ -50,6 +50,7 @@
 	"custom_order": "Custom Order",
 	"shipping_fees": "Shipping Fees",
 	"shipping_fees_note": "Shipping fees will be specified down below.",
+	"other_notes": "Write any other notes or comments for the order",
 	"order_now": "Order Now!",
 	"your_info": "Your Info",
 	"order_success": "Your order is sent successfully. We will contact you as soon as possible",
@@ -59,9 +60,10 @@
 	"login": "Login",
 	"wrong_email_or_pass": "Wrong email or password",
 	"fatal_error": "We are sorry, there is a fatal error. Please try again.",
-	"fatal_error_contact_usback": "Still facing the same issue? Contact Us",
+	"fatal_error_contact_us": "Still facing the same issue? Contact Us",
 	"drawing_styles_examples": "Drawing Styles Examples",
 	"admin_dashboard": "Admin Dashboard",
+	"orders": "Orders",
 	"my_orders": "My Orders",
 	"total_orders": "Total orders",
 	"total_undelivered": "Total undelivered orders",
@@ -155,6 +157,75 @@
 	"backup": "Backup",
 	"save_success": "Saved Successfully",
 	"save_fail": "Saving Failed. Please try again.",
-	"category_err": "Choose a category"
+	"category_err": "Choose a category",
+
+	"product_details_main": "Our products and their delivery times:",
+	"decoration_tableaus": "Decoration tableaus",
+	"material": "Materials",
+	"decoration_tableaus_material_l1": "Printed on a 12mm MDF wood.",
+	"decoration_tableaus_material_l2": "Has two hangers on the back to be hanged either horizontally or vertically.",
+	"decoration_tableaus_material_l3": "Has an extra protection screen to protect it from water and dust.",
+	"decoration_tableaus_material_l4": "Has a leather-like texture and can cleaned easily.",
+	"decoration_tableaus_delivery_l1": "Delivery to a home: 3-5 days",
+	"decoration_tableaus_delivery_l2": "Delivery to a metro station: 2-3 days",
+	"mersal": "Mersal",
+	"mersal_material_l1": "An envelope made of heavy paper(canson).",
+	"mersal_material_l2": "Contains Watercolor drawings.",
+	"mersal_delivery_l1": "Delivery to a home: within 7 days",
+	"mersal_delivery_l2": "Delivery to a metro station: within 7 days",
+	"delivery_time": "Delivery times",
+
+	"digital_effect_portrait": "Digital Effect Portrait",
+	"digital_effect_portrait_material_l1": "Printed on a 12mm MDF wood.",
+	"digital_effect_portrait_material_l2": "Has two hangers on the back to be hanged either horizontally or vertically.",
+	"digital_effect_portrait_material_l3": "Has an extra protection screen to protect it from water and dust.",
+	"digital_effect_portrait_material_l4": "Has a leather-like texture and can cleaned easily.",
+	"digital_effect_portrait_delivery_l1": "Delivery to a home: 3-5 days",
+	"digital_effect_portrait_delivery_l2": "Delivery to a metro station: 2-3 days",
+	"wood_carving": "Wood carving",
+	"natural_wood_material_l1": "Natural wood.",
+	"natural_wood_material_l2": "It has text carved in it. You can write:",
+	"natural_wood_material_l21": "A name",
+	"natural_wood_material_l22": "A date",
+	"natural_wood_material_l23": "A quote",
+	"natural_wood_delivery_l1": "Delivery to a home: within 7 days",
+	"natural_wood_delivery_l2": "Delivery to a metro station: within 7 days",
+	"other_drawing_styles": "Others (Pencil, Pen, Coal, Gouache, watercolor)",
+	"other_drawing_styles_material_l1": "Hand drawing on heavy paper (canson).",
+	"other_drawing_styles_material_l2": "Kept in a black wood frame.",
+	"other_drawing_styles_delivery_l1": "Delivery to a home: within 7 days",
+	"other_drawing_styles_delivery_l2": "Delivery to a metro station: within 7 days",
+
+	"search_for_order": "Search for order",
+	"write_order_code": "Code",
+	"search": "Search",
+	"no_orders_found": "No orders found.",
+	"customer_email_note": "Write your email to receive our offers and news.",
+
+	"add_gift_bow": "Add a gift bow.",
+	"add_gift_wrap": "Add gift wrap.",
+
+	"other_prices": "Other Prices",
+	"gift_bow_price": "Gift bow price",
+	"gift_wrap_price": "Gift wrap price",
+
+	"primary_admin": "Admin with all privilleges",
+	"admins": "Admins",
+	"order": "Order",
+	"authority": "Authority",
+
+	"order_note": "Order notes",
+
+	"product_description": "Product description",
+	"add_product": "Add new product"
+
+
+
+
+
+
+
+
+
 	
 }

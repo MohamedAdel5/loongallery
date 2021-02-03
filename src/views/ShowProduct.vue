@@ -15,9 +15,19 @@
               />
             </v-col>
             <v-col cols="12" sm="6" class="mt-10">
-              <h2 class="font-weight-light mb-10">
+              <h2 class="font-weight-regular mb-10">
                 {{ productName(product) }}
               </h2>
+              <v-row v-if="product.description">
+                <v-col cols="12">
+                  <h3 class="font-weight-regular">
+                    {{ $t("product_description") }}
+                  </h3>
+                  <pre class="subtitle-2 font-weight-light">{{
+                    product.description
+                  }}</pre>
+                </v-col>
+              </v-row>
 
               <v-row class="mt-4">
                 <v-col cols="6" class="d-flex justify-left align-center pa-0">

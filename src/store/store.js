@@ -10,6 +10,8 @@ const store = new Vuex.Store({
     customGeneralProducts: {},
     cart: [],
     facePrice: null,
+    giftBowPrice: null,
+    giftWrapPrice: null,
     shippingFees: {},
     loggedIn: true,
     authJwt: null,
@@ -36,6 +38,12 @@ const store = new Vuex.Store({
     },
     facePrice: state => {
       return state.facePrice;
+    },
+    giftBowPrice: state => {
+      return state.giftBowPrice;
+    },
+    giftWrapPrice: state => {
+      return state.giftWrapPrice;
     },
 
     shippingFees: state => {
@@ -106,6 +114,12 @@ const store = new Vuex.Store({
     SET_FACE_PRICE: (state, facePrice) => {
       state.facePrice = facePrice;
     },
+    SET_GIFT_BOW_PRICE: (state, giftBowPrice) => {
+      state.giftBowPrice = giftBowPrice;
+    },
+    SET_GIFT_WRAP_PRICE: (state, giftWrapPrice) => {
+      state.giftWrapPrice = giftWrapPrice;
+    },
 
     SET_SHIPPING_FEES: (state, shippingFees) => {
       state.shippingFees = shippingFees;
@@ -157,6 +171,12 @@ const store = new Vuex.Store({
     },
     setFacePrice: ({ commit }, facePrice) => {
       commit("SET_FACE_PRICE", facePrice);
+    },
+    setGiftBowPrice: ({ commit }, giftBowPrice) => {
+      commit("SET_GIFT_BOW_PRICE", giftBowPrice);
+    },
+    setGiftWrapPrice: ({ commit }, giftWrapPrice) => {
+      commit("SET_GIFT_WRAP_PRICE", giftWrapPrice);
     },
     setShippingFees: ({ commit }, shippingFees) => {
       commit("SET_SHIPPING_FEES", shippingFees);

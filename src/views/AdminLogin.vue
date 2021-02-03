@@ -7,7 +7,7 @@
       <v-container>
         <v-row class="d-flex justify-center">
           <v-col cols="6">
-            <v-form v-model="valid" ref="form">
+            <v-form v-model="valid" ref="form" :key="$root.$i18n.locale">
               <v-text-field
                 v-model="email"
                 :rules="emailRules"
@@ -52,12 +52,12 @@ export default {
       password: "",
       showPassword: false,
       emailRules: [
-        v => !!v || "E-mail is required",
-        v => /.+@.+\..+/.test(v) || "E-mail must be valid"
+        v => !!v || this.$t("email_err1"),
+        v => /.+@.+\..+/.test(v) || this.$t("email_err2")
       ],
       passwordRules: [
-        v => !!v || "Password is required",
-        v => v.length > 8 || "Password length must be 8-50 characters"
+        v => !!v || this.$t("password_err1"),
+        v => v.length > 8 || this.$t("password_err2")
       ]
     };
   },

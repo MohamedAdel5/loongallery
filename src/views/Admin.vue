@@ -36,22 +36,24 @@
         <v-divider></v-divider>
 
         <v-list nav dense>
-          <v-list-item
-            v-for="item in navbarTabs"
-            :key="item.title"
-            link
-            @click="currentComponent = item.component"
-          >
-            <v-list-item-icon class="primary--text">
-              <v-icon class="secondary--text">{{ item.icon }}</v-icon>
-            </v-list-item-icon>
+          <template v-for="item in navbarTabs">
+            <v-list-item
+              :key="item.title"
+              v-if="item.authority.includes($store.getters.admin.authority)"
+              link
+              @click="currentComponent = item.component"
+            >
+              <v-list-item-icon class="primary--text">
+                <v-icon class="secondary--text">{{ item.icon }}</v-icon>
+              </v-list-item-icon>
 
-            <v-list-item-content>
-              <v-list-item-title class="white--text">{{
-                itemTitle(item)
-              }}</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
+              <v-list-item-content>
+                <v-list-item-title class="white--text">{{
+                  itemTitle(item)
+                }}</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </template>
         </v-list>
       </v-navigation-drawer>
       <v-container
@@ -73,6 +75,9 @@ import AdminEditPrices from "../components/AdminEditPrices";
 import AdminDatabaseBackup from "../components/AdminDatabaseBackup";
 import AdminEditAnnouncements from "../components/AdminEditAnnouncements";
 import AdminSendEmails from "../components/AdminSendEmails";
+import AdminSignup from "../components/AdminSignup";
+import AdminDeleteAdmins from "../components/AdminDeleteAdmins";
+
 import { validateAdminTokenMixin } from "@/mixins/utilityMixins";
 export default {
   name: "admin",
@@ -84,7 +89,9 @@ export default {
     AdminEditPrices,
     AdminDatabaseBackup,
     AdminEditAnnouncements,
-    AdminSendEmails
+    AdminSendEmails,
+    AdminSignup,
+    AdminDeleteAdmins
   },
   data() {
     return {
@@ -94,13 +101,15 @@ export default {
           icon: "mdi-phone-message",
           title: "Orders",
           title_ar: "الطلبات",
-          component: "admin-orders"
+          component: "admin-orders",
+          authority: ["primary", "secondary"]
         },
         {
           icon: "mdi-image",
           title: "Our Products",
           title_ar: "منتجاتنا",
-          component: "admin-products"
+          component: "admin-products",
+          authority: ["primary", "secondary"]
         },
         // {
         //   icon: "mdi-chart-bell-curve",
@@ -111,25 +120,43 @@ export default {
           icon: "mdi-currency-usd",
           title: "Edit Prices",
           title_ar: "تعديل الأسعار",
-          component: "admin-edit-prices"
+          component: "admin-edit-prices",
+          authority: ["primary"]
         },
         {
           icon: "mdi-television-guide",
           title: "Edit Announcements",
           title_ar: "تعديل الاعلانات",
-          component: "admin-edit-announcements"
+          component: "admin-edit-announcements",
+          authority: ["primary"]
         },
         {
           icon: "mdi-email",
           title: "Send Emails",
           title_ar: "ارسال بريد الكتروني",
-          component: "admin-send-emails"
+          component: "admin-send-emails",
+          authority: ["primary"]
         },
         {
           icon: "mdi-content-save",
           title: "Database backup",
           title_ar: "حفظ قاعدة البيانات",
-          component: "admin-database-backup"
+          component: "admin-database-backup",
+          authority: ["primary"]
+        },
+        {
+          icon: "mdi-account-plus",
+          title: "Admin signup",
+          title_ar: "إانشاء حساب مدير",
+          component: "admin-signup",
+          authority: ["primary"]
+        },
+        {
+          icon: "mdi-delete",
+          title: "Remove Admins",
+          title_ar: "حذف حساب مدير",
+          component: "admin-delete-admins",
+          authority: ["primary"]
         }
       ],
       currentComponent: "admin-orders"

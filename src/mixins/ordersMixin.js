@@ -3,7 +3,8 @@ import {
   setShippingFeesMixin,
   setUserOrdersMixin,
   setNonCustomGeneralProductsMixin,
-  setCustomGeneralProductsMixin
+  setCustomGeneralProductsMixin,
+  searchOrderMixin
 } from "./apiMixins";
 
 export default {
@@ -12,7 +13,8 @@ export default {
     setUserOrdersMixin,
     setShippingFeesMixin,
     setNonCustomGeneralProductsMixin,
-    setCustomGeneralProductsMixin
+    setCustomGeneralProductsMixin,
+    searchOrderMixin
   ],
   data() {
     return {
@@ -26,7 +28,8 @@ export default {
       undeliveredCount: null,
       ordersListsEnable: undefined,
       orders: [],
-      imageSize: process.env.VUE_APP_ORDER_IMAGE_SIZE
+      imageSize: process.env.VUE_APP_ORDER_IMAGE_SIZE,
+      searchOrderCode: ""
     };
   },
   mounted: async function() {
@@ -98,6 +101,16 @@ export default {
     disableAllLists: function() {
       for (let i = 0; i < this.ordersListsEnable.length; i++) {
         this.ordersListsEnable[i] = false;
+      }
+    },
+    searchOrderSubmit: async function() {
+      if (this.searchOrderCode && this.searchOrderCode.length > 0) {
+        const data = await this.searchOrder(this.searchOrderCode);
+        this.orders = data.orders;
+        this.pagesCount = 1;
+        this.page = 1;
+      } else {
+        await this.getOrders(1);
       }
     }
   }

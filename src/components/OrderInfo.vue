@@ -159,6 +159,21 @@
               </p>
             </template> -->
           </v-container>
+          <v-container
+            class="my-2"
+            style="border: solid 1px grey; border-radius: 5px"
+            v-if="!this.isLoggedIn"
+          >
+            <v-row class="d-block pt-4">
+              <label>{{ $t("customer_email_note") }}</label>
+              <v-text-field
+                v-model="customerEmail"
+                :rules="emailRules"
+                :label="$t('email')"
+                dense
+              ></v-text-field>
+            </v-row>
+          </v-container>
           <v-container>
             <v-row>
               <v-col cols="12">
@@ -178,7 +193,7 @@
           <v-btn
             class="my-4"
             color="secondary"
-            :disabled="cartIsEmpty"
+            :disabled="cartIsEmpty || !valid"
             @click="confirmOrder"
             >{{ $t("confirm_order") }}</v-btn
           >
@@ -235,6 +250,8 @@ export default {
       userPhoneNumbers: undefined,
       userAddresses: undefined,
 
+      customerEmail: "",
+
       message: "",
 
       orderedSuccessfully: false,
@@ -264,7 +281,10 @@ export default {
       shippingMethodRules: [
         v => !!v || v == 0 || this.$t("shipping_method_err")
       ],
-      homeAddressRules: [v => v === "" || !!v || this.$t("address_err")]
+      homeAddressRules: [v => v === "" || !!v || this.$t("address_err")],
+      emailRules: [
+        v => v === "" || /.+@.+\..+/.test(v) || this.$t("email_err2")
+      ]
     };
   },
 
@@ -332,6 +352,8 @@ export default {
         products: JSON.parse(JSON.stringify(this.$store.getters.cart))
       };
       if (this.isLoggedIn) order.userID = this.$store.getters.user._id;
+      if (this.customerEmail.length > 0)
+        order.customerEmail = this.customerEmail;
 
       let formData = new FormData();
       for (let i = 0; i < this.$store.getters.cart.length; i++) {

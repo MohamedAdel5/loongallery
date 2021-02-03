@@ -1,7 +1,7 @@
 <template>
   <v-card class="main" light v-if="dataFetched">
     <h2 class="text-center py-10 secondary--text">
-      {{ $t("change_announcement") }}t
+      {{ $t("change_announcement") }}
     </h2>
     <v-container class="d-flex flex-column align-content-space-around pa-10">
       <v-row>
@@ -21,7 +21,8 @@
                   dense
                   accept="image/*"
                   :label="$t('select_image')"
-                  @change="selectFile"
+                  :rules="fileRules"
+                  v-model="announcementImage"
                 ></v-file-input>
               </v-col>
             </v-row>
@@ -34,8 +35,11 @@
 
             <v-row class="mt-10">
               <v-col cols="12" class="pa-0" sm="6">
-                <v-btn @click="applyChanges" max-width="200px" color="success"
-                  >{{ $t("submit") }}s</v-btn
+                <v-btn
+                  @click="applyChanges"
+                  max-width="200px"
+                  color="success"
+                  >{{ $t("submit") }}</v-btn
                 ><span>{{ message }}</span>
               </v-col>
             </v-row>
@@ -102,9 +106,9 @@ export default {
     };
   },
   methods: {
-    selectFile(file) {
-      this.announcementImage = file;
-    },
+    // selectFile(file) {
+    //   this.announcementImage = file;
+    // },
     applyChanges: async function() {
       this.$refs.form.validate();
       if (!this.valid) {

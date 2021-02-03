@@ -155,64 +155,8 @@
         style="border: solid 1px grey; border-radius: 5px"
         class="mx-2 mt-6"
       >
-        <v-container id="productsDetails">
-          <v-row>
-            <v-col cols="12">
-              <h3>Our products and their delivery times:</h3>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12">
-              <h4>Decoration tableaus</h4>
-              <ul>
-                <li>
-                  Material <br />
-                  <ul>
-                    <li>Printed on a 12mm MDF wood.</li>
-                    <li>
-                      Has two hangers on the back to be hanged either
-                      horizontally or vertically.
-                    </li>
-                    <li>
-                      Has an extra protection screen to protect it from water
-                      and dust.
-                    </li>
-                    <li>Has a leather-like texture and can cleaned easily.</li>
-                  </ul>
-                </li>
-                <li>
-                  Delivery time <br />
-                  <ul>
-                    <li>Delivery to a home: 3-5 days</li>
-                    <li>Delivery to a metro station: 2-3 days</li>
-                    <li>Receive from our branch location: 2-3 days</li>
-                  </ul>
-                </li>
-              </ul>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12">
-              <h4>Mersal</h4>
-              <ul>
-                <li>
-                  Material <br />
-                  <ul>
-                    <li>An envelope made of heavy paper(canson).</li>
-                    <li>Watercolor drawing.</li>
-                  </ul>
-                </li>
-                <li>
-                  Delivery time <br />
-                  <ul>
-                    <li>Delivery to a home: within 7 days</li>
-                    <li>Delivery to a metro station: within 7 days</li>
-                    <li>Receive from our branch location: within 7 days</li>
-                  </ul>
-                </li>
-              </ul>
-            </v-col>
-          </v-row>
+        <v-container id="productsDetails" class="pa-2">
+          <non-custom-products-details />
         </v-container>
       </v-row>
     </v-container>
@@ -221,13 +165,16 @@
 
 <script>
 import ProductCard from "./ProductCard";
+import NonCustomProductsDetails from "./NonCustomProductsDetails";
+
 import productsMixin from "@/mixins/productsMixin";
 
 export default {
   name: "our-products",
   mixins: [productsMixin],
   components: {
-    ProductCard
+    ProductCard,
+    NonCustomProductsDetails
   },
   watch: {},
   data() {
