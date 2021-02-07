@@ -130,7 +130,10 @@
             <v-row>
               <v-checkbox v-model="addGiftWrap">
                 <template v-slot:label>
-                  <label class="px-2">{{ $t("add_gift_wrap") }}</label>
+                  <label class="px-2"
+                    >{{ $t("add_gift_wrap") }} -
+                    {{ $store.getters.giftWrapPrice }} LE</label
+                  >
                   <v-img
                     :src="require('@/assets/logo.jpg')"
                     max-height="40px"
@@ -142,7 +145,10 @@
             <v-row class="pt-6">
               <v-checkbox v-model="addGiftBow">
                 <template v-slot:label>
-                  <label class="px-2">{{ $t("add_gift_bow") }}</label>
+                  <label class="px-2"
+                    >{{ $t("add_gift_bow") }} -
+                    {{ $store.getters.giftBowPrice }} LE</label
+                  >
                   <v-img
                     :src="require('@/assets/logo.jpg')"
                     max-height="40px"

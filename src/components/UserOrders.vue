@@ -70,11 +70,11 @@
             ></v-list-item-title>
             <div class="text-right">
               <v-chip
-                v-if="order.delivered"
+                v-if="order.deliveredStatus"
                 small
-                color="success"
+                color="secondary"
                 width="100"
-                >{{ $t("delivered") }}</v-chip
+                >{{ $t(order.deliveredStatus) }}</v-chip
               >
               <v-chip
                 v-if="hasACustomOrder(order)"

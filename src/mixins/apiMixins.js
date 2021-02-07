@@ -270,12 +270,12 @@ module.exports.makeOrderMixin = {
       try {
         const res = await this.$http.post(`/orders`, formData, options);
         if (res.status === 200) {
-          return true;
+          return res.data.order;
         } else {
           throw new Error("fail");
         }
       } catch (err) {
-        return false;
+        return null;
       }
     }
   }
@@ -557,12 +557,35 @@ module.exports.setSeenMixin = {
 
 module.exports.setDeliveredMixin = {
   methods: {
-    setDelivered: async function(orderID) {
+    setDelivered: async function(orderID, status) {
       //Send a request to alter the delivered status
       //Check if the request went well then set the delivered status here
       try {
         const res = await this.$http.patch(
-          `/orders/${orderID}/delivered`,
+          `/orders/${orderID}/delivered?status=${status}`,
+          {},
+          {
+            headers: { Authorization: this.$store.getters.adminAuthJwt }
+          }
+        );
+        if (res.status === 200) {
+          return true;
+        } else return false;
+      } catch (err) {
+        return false;
+      }
+    }
+  }
+};
+
+module.exports.setDesignerDoneMixin = {
+  methods: {
+    setDesignerDone: async function(orderID) {
+      //Send a request to alter the delivered status
+      //Check if the request went well then set the delivered status here
+      try {
+        const res = await this.$http.patch(
+          `/orders/${orderID}/designer-done`,
           {},
           {
             headers: { Authorization: this.$store.getters.adminAuthJwt }

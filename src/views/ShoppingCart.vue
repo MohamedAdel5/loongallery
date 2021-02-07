@@ -151,15 +151,17 @@
           <v-row>
             <v-col cols="12" class="py-0">
               <order-info
-                v-on:ordered-successfully="orderedSuccessfully = $event"
+                v-on:ordered-successfully="onOrderSubmit"
               ></order-info>
             </v-col>
           </v-row>
         </template>
 
-        <v-alert type="success" v-if="orderedSuccessfully === 'success'">{{
-          $t("order_success")
-        }}</v-alert>
+        <v-alert type="success" v-if="orderedSuccessfully === 'success'"
+          >{{ $t("order_success") }}
+          <br />
+          {{ $t("order_code") }}: {{ orderCode }}</v-alert
+        >
         <v-alert type="error" v-if="orderedSuccessfully === 'fail'">{{
           $t("order_fail")
         }}</v-alert>
@@ -207,7 +209,8 @@ export default {
     return {
       dataFetched: false,
       imageSize: process.env.VUE_APP_CART_IMAGE_SIZE,
-      orderedSuccessfully: "none"
+      orderedSuccessfully: "none",
+      orderCode: null
     };
   },
   methods: {
@@ -244,6 +247,10 @@ export default {
             : nonCustomGeneralProducts[key].productName_Ar;
       }
       return "";
+    },
+    onOrderSubmit: function(...args) {
+      this.orderedSuccessfully = args[0];
+      this.orderCode = args[1];
     },
     goBack: function() {
       this.$router.go(-1);

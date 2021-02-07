@@ -41,10 +41,31 @@
                 </tr>
                 <tr>
                   <td>
-                    {{ $t("total_delivered") }}
+                    {{ $t("total_in_transit") }}
                   </td>
                   <td>
-                    {{ totalCount - undeliveredCount }}
+                    {{ inTransitCount }}
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    {{ $t("total_undelivered") }}
+                  </td>
+                  <td>
+                    {{
+                      totalCount -
+                        undeliveredCount -
+                        rejectedCount -
+                        inTransitCount
+                    }}
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    {{ $t("total_rejected") }}
+                  </td>
+                  <td>
+                    {{ rejectedCount }}
                   </td>
                 </tr>
               </tbody>
@@ -108,11 +129,11 @@
             ></v-list-item-title>
             <div class="text-right">
               <v-chip
-                v-if="order.delivered"
+                v-if="order.deliveredStatus"
                 small
-                color="success"
+                color="secondary"
                 width="100"
-                >{{ $t("delivered") }}</v-chip
+                >{{ $t(order.deliveredStatus) }}</v-chip
               >
               <v-chip
                 v-if="hasACustomOrder(order)"
@@ -132,6 +153,7 @@
                   orderToDeleteIndex = i;
                 "
                 small
+                v-if="myAuthority === 'primary'"
               >
                 {{ $t("remove") }}
                 <v-icon>mdi-delete</v-icon>
@@ -315,13 +337,40 @@
                 </tbody>
               </template>
             </v-simple-table>
-            <v-btn
-              color="success"
-              small
-              @click="handleDelivered(order)"
-              v-if="!order.delivered"
-              >{{ $t("mark_as_delivered") }}</v-btn
+            <template
+              v-if="myAuthority === 'manager' || myAuthority === 'primary'"
             >
+              <v-btn
+                color="success"
+                small
+                @click="handleDelivered(order, 'delivered')"
+                :disabled="order.deliveredStatus === 'delivered'"
+                >{{ $t("mark_as_delivered") }}</v-btn
+              ><br />
+              <v-btn
+                color="secondary"
+                small
+                @click="handleDelivered(order, 'in transit')"
+                :disabled="order.deliveredStatus === 'in transit'"
+                >{{ $t("mark_as_in_transit") }}</v-btn
+              ><br />
+              <v-btn
+                color="error"
+                small
+                @click="handleDelivered(order, 'rejected')"
+                :disabled="order.deliveredStatus === 'rejected'"
+                >{{ $t("mark_as_rejected") }}</v-btn
+              ><br />
+            </template>
+            <template v-if="myAuthority === 'designer'">
+              <v-btn
+                color="success"
+                small
+                @click="handleDone(order)"
+                :disabled="order.designerDone"
+                >{{ $t("mark_as_done") }}</v-btn
+              >
+            </template>
           </v-list-item-content>
         </v-list-item>
       </v-list-group>
@@ -391,11 +440,18 @@ import ordersMixin from "@/mixins/ordersMixin.js";
 import {
   setSeenMixin,
   setDeliveredMixin,
-  deleteOrderMixin
+  deleteOrderMixin,
+  setDesignerDoneMixin
 } from "@/mixins/apiMixins";
 export default {
   name: "admin-orders",
-  mixins: [ordersMixin, setSeenMixin, setDeliveredMixin, deleteOrderMixin],
+  mixins: [
+    ordersMixin,
+    setSeenMixin,
+    setDeliveredMixin,
+    deleteOrderMixin,
+    setDesignerDoneMixin
+  ],
   data() {
     return {
       deletedSuccessfully: "none",
@@ -405,8 +461,14 @@ export default {
       showDeliveredError: false
     };
   },
+  computed: {
+    myAuthority() {
+      return this.$store.getters.admin.authority;
+    }
+  },
   methods: {
     handleSeen: async function(order) {
+      if (this.myAuthority !== "manager") return;
       //Check if the request went well then set the seen status here
       if (order.seen) return;
       this.showSeenError = !(await this.setSeen(order._id));
@@ -415,14 +477,20 @@ export default {
         this.unseenCount -= 1;
       }
     },
-    handleDelivered: async function(order) {
+    handleDelivered: async function(order, status) {
       //Check if the request went well then set the delivered status here
-      this.showDeliveredError = !(await this.setDelivered(order._id));
+      this.showDeliveredError = !(await this.setDelivered(order._id, status));
       if (!this.showDeliveredError) {
-        order.delivered = true;
+        order.deliveredStatus = status;
         this.undeliveredCount -= 1;
       }
     },
+    handleDone: async function(order) {
+      //Check if the request went well then set the delivered status here
+      this.showDeliveredError = !(await this.setDesignerDone(order._id));
+      order.designerDone = true;
+    },
+
     deleteOrderSubmit: async function() {
       this.deletedSuccessfully = (await this.deleteOrder(
         this.orders[this.orderToDeleteIndex]._id

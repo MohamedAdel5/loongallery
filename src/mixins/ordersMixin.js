@@ -26,6 +26,9 @@ export default {
       ordersCount: null,
       unseenCount: null,
       undeliveredCount: null,
+      rejectedCount: null,
+      inTransitCount: null,
+
       ordersListsEnable: undefined,
       orders: [],
       imageSize: process.env.VUE_APP_ORDER_IMAGE_SIZE,
@@ -40,6 +43,21 @@ export default {
       await this.setNonCustomGeneralProducts();
       await this.setCustomGeneralProducts();
       await this.setShippingFees();
+
+      //For designer admin only
+      if (
+        this.orders &&
+        this.orders.length > 0 &&
+        this.$store.getters.admin &&
+        this.$store.getters.admin.authority === "designer"
+      ) {
+        this.orders = this.orders.filter(o => {
+          for (let p of o.products) {
+            if (p.generalProduct.productName === "Digital effect") return true;
+          }
+          return false;
+        });
+      }
 
       this.dataFetched = true;
     } catch (err) {
@@ -59,7 +77,10 @@ export default {
       this.totalCount = data.totalSize;
       this.ordersCount = data.size;
       this.unseenCount = data.totalUnseen;
+      this.rejectedCount = data.totalRejected;
+      this.inTransitCount = data.totalInTransit;
       this.undeliveredCount = data.totalUndelivered;
+
       this.orders = data.orders;
       this.page = pageNumber;
     },

@@ -162,10 +162,10 @@
           <v-container
             class="my-2"
             style="border: solid 1px grey; border-radius: 5px"
-            v-if="!this.isLoggedIn"
+            v-if="!this.isLoggedIn || (this.user && this.user.isSocialAdmin)"
           >
-            <v-row class="d-block pt-4">
-              <label>{{ $t("customer_email_note") }}</label>
+            <v-row class="d-block pt-4 pl-2">
+              <v-label>{{ $t("customer_email_note") }}</v-label>
               <v-text-field
                 v-model="customerEmail"
                 :rules="emailRules"
@@ -369,9 +369,9 @@ export default {
       let options = { "Content-Type": "multipart/form-data" };
       if (this.isLoggedIn)
         options["headers"] = { Authorization: this.$store.getters.authJwt };
-      const result = await this.makeOrder(formData, options);
-      if (result) {
-        this.$emit("ordered-successfully", "success");
+      const newOrder = await this.makeOrder(formData, options);
+      if (newOrder) {
+        this.$emit("ordered-successfully", "success", newOrder.code);
         this.$store.dispatch("emptyCart");
       } else {
         this.$emit("ordered-successfully", "fail");

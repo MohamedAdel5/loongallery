@@ -15,10 +15,10 @@ const store = new Vuex.Store({
     shippingFees: {},
     loggedIn: true,
     authJwt: null,
-    user: {},
+    user: null,
     adminLoggedIn: false,
     adminAuthJwt: null,
-    admin: {}
+    admin: null
   },
   getters: {
     nonCustomGeneralProducts: state => {

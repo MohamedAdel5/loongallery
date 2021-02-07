@@ -102,14 +102,14 @@ export default {
           title: "Orders",
           title_ar: "الطلبات",
           component: "admin-orders",
-          authority: ["primary", "secondary"]
+          authority: ["primary", "manager", "designer"]
         },
         {
           icon: "mdi-image",
           title: "Our Products",
           title_ar: "منتجاتنا",
           component: "admin-products",
-          authority: ["primary", "secondary"]
+          authority: ["primary"]
         },
         // {
         //   icon: "mdi-chart-bell-curve",

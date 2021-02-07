@@ -39,11 +39,12 @@
                 :append-icon="showPasswordCheck ? 'mdi-eye' : 'mdi-eye-off'"
                 @click:append="showPasswordCheck = !showPasswordCheck"
               ></v-text-field>
-
-              <v-checkbox
-                v-model="primary"
-                :label="$t('primary_admin')"
-              ></v-checkbox>
+              <v-radio-group v-model="authority">
+                <v-radio :label="'primary admin'" :value="'primary'"></v-radio>
+                <v-radio :label="'designer'" :value="'designer'"></v-radio>
+                <v-radio :label="'manager'" :value="'manager'"></v-radio>
+                <v-radio :label="'social'" :value="'social'"></v-radio>
+              </v-radio-group>
               <v-btn class="my-4" color="secondary" @click="signupSubmit">{{
                 $t("signup")
               }}</v-btn>
@@ -62,11 +63,11 @@
 </template>
 
 <script>
-import { adminSignupMixin } from "@/mixins/apiMixins";
+import { adminSignupMixin, signupMixin } from "@/mixins/apiMixins";
 
 export default {
   name: "admin-signup",
-  mixins: [adminSignupMixin],
+  mixins: [adminSignupMixin, signupMixin],
   data() {
     return {
       valid: false,
@@ -80,7 +81,7 @@ export default {
       showPassword: false,
       showPasswordCheck: false,
 
-      primary: false
+      authority: null
     };
   },
 
@@ -121,14 +122,27 @@ export default {
     signupSubmit: async function() {
       this.$refs.form.validate();
       if (this.valid) {
-        const newAdminObject = {
-          name: this.name,
-          email: this.email,
-          password: this.password,
-          authority: this.primary ? "primary" : "secondary"
-        };
+        let newAdminObject;
+        if (this.authority === "social") {
+          newAdminObject = {
+            name: this.name,
+            phoneNumbers: ["01111111111"],
+            addresses: [`dummy address`],
+            email: this.email,
+            password: this.password,
+            isSocialAdmin: true
+          };
+          this.signupFail = !(await this.signup(newAdminObject));
+        } else {
+          newAdminObject = {
+            name: this.name,
+            email: this.email,
+            password: this.password,
+            authority: this.authority
+          };
+          this.signupFail = !(await this.adminSignup(newAdminObject));
+        }
 
-        this.signupFail = !(await this.adminSignup(newAdminObject));
         this.signupSuccess = !this.signupFail;
       }
     }
